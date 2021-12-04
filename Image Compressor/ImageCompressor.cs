@@ -7,8 +7,27 @@ namespace Image_Compressor;
 
 public static class ImageCompressor
 {
-	public static void Compress(Image<Rgba32> image, float complexityThreshold, int limit)
+	public static void Compress(Image<Rgba32> image, float complexityThreshold, int maxLimit)
 	{
+		int limit = maxLimit;
+
+		int quadEdge = Math.Max(image.Width, image.Height);
+		for (int i = 0; i < maxLimit; i++)
+		{
+			if (quadEdge % 2 == 0)
+			{
+				quadEdge /= 2;
+			}
+			else
+			{
+				limit = i;
+
+				//Console.WriteLine($"actual limit used: {limit}");
+
+				break;
+			}
+		}
+
 		image.Mutate(i => i.Pad(Math.Max(image.Width, image.Height), Math.Max(image.Width, image.Height)));
 
 		QuadTree<Image<Rgba32>> quadTree = new(image);
