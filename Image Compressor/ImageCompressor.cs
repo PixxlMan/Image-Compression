@@ -22,7 +22,7 @@ public static class ImageCompressor
 			{
 				limit = i;
 
-				//Console.WriteLine($"actual limit used: {limit}");
+				Console.WriteLine($"actual limit used: {limit}");
 
 				break;
 			}
@@ -131,7 +131,7 @@ public static class ImageCompressor
 		}
 	}
 
-	static void RecursivelyQuadrantise(QuadTreeCell<Image<Rgba32>> cell, Func<Image, bool> quadrantizePredicate, int limit, ref int count, int parentSegment = -1, int level = 0)
+	static void RecursivelyQuadrantise(QuadTreeCell<Image<Rgba32>> cell, Func<Image<Rgba32>, bool> quadrantizePredicate, int limit, ref int count, int parentSegment = -1, int level = 0)
 	{
 		if (level > limit)
 			return;
@@ -181,22 +181,21 @@ public static class ImageCompressor
 		d = image.Clone(i => i.Crop(dQuadr));
 	}
 
-	public static double CalculateImageComplexity(Image image)
+	public static double CalculateImageComplexity(Image<Rgba32> image)
 	{
-		Image<Rgba32> greyScale = (Image<Rgba32>)image.Clone(i => i.Grayscale());
-		return GetEntropy(greyScale, 256);
+		return GetEntropy(image, 256);
 	}
 
 	// (Modified and translated to C#) From: https://github.com/Jeanvit/CakeImageAnalyzer/blob/master/src/cake/classes/ImageUtils.java
-	public static uint[] GenerateHistogram(Image<Rgba32> image, uint numberOfBins)
+	public static int[] GenerateHistogram(Image<Rgba32> image, int numberOfBins)
 	{
-		uint[] bins = new uint[numberOfBins];
-		uint intensity;
+		int[] bins = new int[numberOfBins];
+		int intensity;
 		for (int i = 0; i <= image.Width - 1; i++)
 		{
 			for (int j = 0; j <= image.Height - 1; j++)
 			{
-				intensity = image[i, j].R;
+				intensity = (image[i, j].R / 4) + (image[i, j].G / 4) + (image[i, j].B / 4) + (image[i, j].A / 4);
 				bins[intensity]++;
 			}
 		}
@@ -204,9 +203,9 @@ public static class ImageCompressor
 	}
 
 	// (Modified and translated to C#) From: https://github.com/Jeanvit/CakeImageAnalyzer/blob/master/src/cake/classes/ImageUtils.java
-	public static double GetEntropy(Image<Rgba32> image, uint maxValue)
+	public static double GetEntropy(Image<Rgba32> image, int maxValue)
 	{
-		uint[] bins = GenerateHistogram(image, maxValue);
+		int[] bins = GenerateHistogram(image, maxValue);
 		double entropyValue = 0, temp = 0;
 		double totalSize = image.Height * image.Width; //total size of all symbols in an image
 
