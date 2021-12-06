@@ -1,6 +1,6 @@
 ﻿namespace Quad_Tree
 {
-	public class QuadTree<TLeafData> where TLeafData : class
+	public class QuadTree<TLeafData>
 	{
 		public QuadTree(TLeafData initialData)
 		{

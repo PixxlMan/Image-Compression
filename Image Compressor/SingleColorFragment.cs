@@ -17,9 +17,9 @@ namespace Image_Compressor
 
 		private Rgba32 color;
 
-		public static SingleColorFragment GenerateFragment(Image<Rgba32> image)
+		public static SingleColorFragment GenerateFragment(Image<Rgba32> image, Rectangle rectangle)
 		{
-			SingleColorFragment fragment = new(image[image.Width / 2, image.Height / 2], image.Width, image.Height);
+			SingleColorFragment fragment = new(image[rectangle.X + (rectangle.Width / 2), rectangle.Y + (rectangle.Height / 2)], rectangle.Width, rectangle  .Height);
 
 			return fragment;
 		}

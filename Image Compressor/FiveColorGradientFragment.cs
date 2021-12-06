@@ -40,9 +40,9 @@ namespace Image_Compressor
 			return image;
 		}
 
-		public static FiveColorGradientFragment GenerateFragment(Image<Rgba32> image)
+		public static FiveColorGradientFragment GenerateFragment(Image<Rgba32> image, Rectangle rectangle)
 		{
-			FiveColorGradientFragment fragment = new(image[0, 0], image[image.Width - 1, 0], image[0, image.Height - 1], image[image.Width - 1, image.Height - 1], image[image.Width / 2, image.Height / 2], image.Width, image.Height);
+			FiveColorGradientFragment fragment = new(image[rectangle.Left, rectangle.Top], image[rectangle.Right - 1, rectangle.Top], image[rectangle.Left, rectangle.Bottom - 1], image[rectangle.Right - 1, rectangle.Bottom - 1], image[rectangle.X + (rectangle.Width / 2), rectangle.Y + (rectangle.Height / 2)], rectangle.Width, rectangle.Height);
 
 			return fragment;
 		}

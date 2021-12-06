@@ -25,11 +25,11 @@ namespace Image_Compressor
 
 		public abstract Image<Rgba32> GenerateRepresentation();
 
-		public static Fragment GenerateFragment(Image<Rgba32> image)
+		public static Fragment GenerateFragment(Image<Rgba32> image, Rectangle rectangle)
 		{
-			return FiveColorGradientFragment.GenerateFragment(image);
+			return FiveColorGradientFragment.GenerateFragment(image, rectangle);
 
-			//return SingleColorFragment.GenerateFragment(image);
+			//return SingleColorFragment.GenerateFragment(image, rectangle);
 		}
 	}
 }

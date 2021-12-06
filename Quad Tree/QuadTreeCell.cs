@@ -1,6 +1,6 @@
 ﻿namespace Quad_Tree
 {
-	public class QuadTreeCell<TLeafData> where TLeafData : class
+	public class QuadTreeCell<TLeafData>
 	{
 		public QuadTreeCell(TLeafData leafData)
 		{
@@ -11,9 +11,13 @@
 
 		public TLeafData? LeafData;
 
+		public bool IsLeaf = true;
+
 		public void Split(TLeafData a, TLeafData b, TLeafData c, TLeafData d)
 		{
-			LeafData = null;
+			IsLeaf = false;
+
+			LeafData = default;
 
 			A = new(a);
 			B = new(b);
@@ -23,6 +27,8 @@
 
 		public void Unify(TLeafData leafData)
 		{
+			IsLeaf = true;
+
 			LeafData = leafData;
 
 			A = null;
