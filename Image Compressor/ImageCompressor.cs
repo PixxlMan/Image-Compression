@@ -14,7 +14,7 @@ public static class ImageCompressor
 		int quadEdge = Math.Max(image.Width, image.Height);
 		for (int i = 0; i < maxLimit; i++)
 		{
-			if (quadEdge % 2 == 0)
+			if ((quadEdge / 2) % 2 == 0)
 			{
 				quadEdge /= 2;
 			}
