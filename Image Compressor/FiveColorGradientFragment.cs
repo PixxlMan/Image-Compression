@@ -1,4 +1,5 @@
 ﻿using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
@@ -12,7 +13,7 @@ namespace Image_Compressor
 {
 	public sealed class FiveColorGradientFragment : Fragment
 	{
-		public FiveColorGradientFragment(Rgba32 aColor, Rgba32 bColor, Rgba32 cColor, Rgba32 dColor, Rgba32 centerColor, int width, int height) : base(width, height)
+		public FiveColorGradientFragment(Rgba32 aColor, Rgba32 bColor, Rgba32 cColor, Rgba32 dColor, Rgba32 centerColor)
 		{
 			this.aColor = aColor;
 			this.bColor = bColor;
@@ -27,22 +28,16 @@ namespace Image_Compressor
 		private Rgba32 dColor;
 		private Rgba32 centerColor;
 
-		public override Image<Rgba32> GenerateRepresentation()
+		public override void DrawRepresentation(Image<Rgba32> image, Rectangle rectangle)
 		{
-			Image<Rgba32> image = new(Width, Height);
-
-			PathGradientBrush pathGradientBrush = new PathGradientBrush(new PointF[] { new(0, 0), new(image.Width, 0), new(image.Width, image.Height), new(0, image.Height) }, new Color[] { aColor, bColor, dColor, cColor }, centerColor);
+			PathGradientBrush pathGradientBrush = new PathGradientBrush(new RectangularPolygon(rectangle).Points.ToArray(), new Color[] { aColor, bColor, dColor, cColor }, centerColor);
 
 			image.Mutate(i => i.Fill(pathGradientBrush));
-
-			//image.SaveAsBmp(@$"R:\{Guid.NewGuid()}.bmp");
-
-			return image;
 		}
 
 		public static FiveColorGradientFragment GenerateFragment(Image<Rgba32> image, Rectangle rectangle)
 		{
-			FiveColorGradientFragment fragment = new(image[rectangle.Left, rectangle.Top], image[rectangle.Right - 1, rectangle.Top], image[rectangle.Left, rectangle.Bottom - 1], image[rectangle.Right - 1, rectangle.Bottom - 1], image[rectangle.X + (rectangle.Width / 2), rectangle.Y + (rectangle.Height / 2)], rectangle.Width, rectangle.Height);
+			FiveColorGradientFragment fragment = new(image[rectangle.Left, rectangle.Top], image[rectangle.Right - 1, rectangle.Top], image[rectangle.Left, rectangle.Bottom - 1], image[rectangle.Right - 1, rectangle.Bottom - 1], image[rectangle.X + (rectangle.Width / 2), rectangle.Y + (rectangle.Height / 2)]);
 
 			return fragment;
 		}

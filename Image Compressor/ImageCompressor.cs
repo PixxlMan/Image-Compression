@@ -35,27 +35,29 @@ public static class ImageCompressor
 		int count = 0;
 		RecursivelyQuadrantise(image, quadTree.BaseNode, ((i, r) => CalculateImageComplexity(i, r) < complexityThreshold), limit, ref count);
 
+		Console.WriteLine("quadrantized");
+
 		QuadTree<Fragment> fragmentTree = new(null);
 
 		RecursivelyPopulateFragmentTree(fragmentTree.BaseNode, quadTree.BaseNode, image);
 
+		Console.WriteLine("populated frag tree");
+
 		Image<Rgba32> outputImage = new Image<Rgba32>(image.Width, image.Height);
-		RecursivelyAssembleOutputImage(fragmentTree.BaseNode, ref outputImage, image.Bounds());
+		RecursivelyAssembleOutputImage(fragmentTree.BaseNode, outputImage, image.Bounds());
 		outputImage.SaveAsBmp(@$"R:\output.bmp");
+
+		Console.WriteLine("assembled");
 	}
 
-	private static void RecursivelyAssembleOutputImage(QuadTreeCell<Fragment> fragmentCell, ref Image<Rgba32> outputImage, Rectangle rectangle)
+	private static void RecursivelyAssembleOutputImage(QuadTreeCell<Fragment> fragmentCell, Image<Rgba32> outputImage, Rectangle rectangle)
 	{
 		Point point = new Point(rectangle.X, rectangle.Y);
 		Size size = new Size(rectangle.Width, rectangle.Height);
 
 		if (fragmentCell.LeafData is not null)
 		{
-			Image<Rgba32> image = fragmentCell.LeafData.GenerateRepresentation();
-
-			outputImage.Mutate(i => i.DrawImage(image, point, 1f));
-
-			//outputImage.SaveAsBmp(@$"R:\{Guid.NewGuid()}.bmp");
+			fragmentCell.LeafData.DrawRepresentation(outputImage, rectangle);
 
 			return;
 		}
@@ -69,7 +71,7 @@ public static class ImageCompressor
 				1 => fragmentCell.B,
 				2 => fragmentCell.C,
 				3 => fragmentCell.D,
-			}, ref outputImage, i switch
+			}, outputImage, i switch
 			{
 				0 => a,
 				1 => b,

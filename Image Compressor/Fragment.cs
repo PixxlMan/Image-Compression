@@ -13,17 +13,11 @@ namespace Image_Compressor
 {
 	public abstract class Fragment
 	{
-		public Fragment(int width, int height)
+		public Fragment()
 		{
-			this.Width = width;
-			this.Height = height;
 		}
 
-		protected int Width;
-
-		protected int Height;
-
-		public abstract Image<Rgba32> GenerateRepresentation();
+		public abstract void DrawRepresentation(Image<Rgba32> image, Rectangle rectangle);
 
 		public static Fragment GenerateFragment(Image<Rgba32> image, Rectangle rectangle)
 		{
