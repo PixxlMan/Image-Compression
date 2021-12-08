@@ -7,7 +7,7 @@ namespace Image_Compressor;
 
 public static class ImageCompressor
 {
-	public static void Compress(Image<Rgba32> image, float complexityThreshold, int maxLimit)
+	public static QuadTree<Fragment> Compress(Image<Rgba32> image, float complexityThreshold, int maxLimit)
 	{
 		int limit = maxLimit;
 
@@ -43,11 +43,18 @@ public static class ImageCompressor
 
 		Console.WriteLine("populated frag tree");
 
-		Image<Rgba32> outputImage = new Image<Rgba32>(image.Width, image.Height);
-		RecursivelyAssembleOutputImage(fragmentTree.BaseNode, outputImage, image.Bounds());
+		return fragmentTree;
+	}
+
+	public static Image<Rgba32> Decompress(QuadTree<Fragment> fragmentTree, int width, int height)
+	{
+		Image<Rgba32> outputImage = new Image<Rgba32>(width, height);
+		RecursivelyAssembleOutputImage(fragmentTree.BaseNode, outputImage, new Rectangle(0, 0, width, height));
 		outputImage.SaveAsBmp(@$"R:\output.bmp");
 
 		Console.WriteLine("assembled");
+
+		return outputImage;
 	}
 
 	private static void RecursivelyAssembleOutputImage(QuadTreeCell<Fragment> fragmentCell, Image<Rgba32> outputImage, Rectangle rectangle)
