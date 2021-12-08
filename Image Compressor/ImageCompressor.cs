@@ -59,6 +59,7 @@ public static class ImageCompressor
 
 	public static void SaveToFile(QuadTree<Fragment> fragmentTree, string path)
 	{
+		File.Delete(path);
 		using FileStream fileStream = File.OpenWrite(path);
 		using BinaryWriter binaryWriter = new BinaryWriter(fileStream);
 
