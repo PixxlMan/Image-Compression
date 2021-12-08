@@ -2,12 +2,14 @@
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
-ImageCompressor.Compress(Image.Load<Rgba32>(@"R:\_Image.jpeg"), 2, 5);
+var image = Image.Load<Rgba32>(@"R:\Image.jpg");
+var output = ImageCompressor.Compress(image, 1.5f, 12);
+ImageCompressor.Decompress(output, Math.Max(image.Width, image.Height), Math.Max(image.Width, image.Height));
 
 //Console.WriteLine(ImageCompressor.CalculateImageComplexity(Image.Load(@"R:\_Image.png")));
 
-/*mageCompressor.GetImageQuadrants(Image.Load<Rgba32>(@"R:\_Image.jpeg"), out var a, out var b, out var c, out var d);
-a.SaveAsBmp(@"R:\a.bmp");
+/*ImageCompressor.GetImageQuadrants(Image.Load<Rgba32>(@"R:\_Image.jpeg"), out var a, out var b, out var c, out var d);
+a.SaveAsBmp(@"R:\a.bmp"); 
 b.SaveAsBmp(@"R:\b.bmp");
 c.SaveAsBmp(@"R:\c.bmp");
 d.SaveAsBmp(@"R:\d.bmp");*/
