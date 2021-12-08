@@ -57,6 +57,60 @@ public static class ImageCompressor
 		return outputImage;
 	}
 
+	public static void SaveToFile(QuadTree<Fragment> fragmentTree, string path)
+	{
+		using FileStream fileStream = File.OpenWrite(path);
+		using BinaryWriter binaryWriter = new BinaryWriter(fileStream);
+
+		RecursivelyWriteQuadTreeData(fragmentTree.BaseNode, binaryWriter);
+	}
+
+	public static void RecursivelyWriteQuadTreeData(QuadTreeCell<Fragment> quadTreeCell, BinaryWriter binaryWriter)
+	{
+		binaryWriter.Write(quadTreeCell.IsLeaf);
+
+		if (quadTreeCell.IsLeaf)
+		{
+			Fragment.WriteFragmentData(quadTreeCell.LeafData, binaryWriter);
+
+			return;
+		}
+
+		RecursivelyWriteQuadTreeData(quadTreeCell.A, binaryWriter);
+		RecursivelyWriteQuadTreeData(quadTreeCell.B, binaryWriter);
+		RecursivelyWriteQuadTreeData(quadTreeCell.C, binaryWriter);
+		RecursivelyWriteQuadTreeData(quadTreeCell.D, binaryWriter);
+	}
+
+	public static QuadTree<Fragment> LoadFromFile(string path)
+	{
+		using FileStream fileStream = File.OpenRead(path);
+		using BinaryReader binaryReader = new BinaryReader(fileStream);
+
+		QuadTree<Fragment> fragmentTree = new QuadTree<Fragment>(null);
+
+		RecursivelyReadQuadTreeData(fragmentTree.BaseNode, binaryReader);
+
+		return fragmentTree;
+	}
+
+	public static void RecursivelyReadQuadTreeData(QuadTreeCell<Fragment> quadTreeCell, BinaryReader binaryReader)
+	{
+		if (binaryReader.ReadBoolean() == true)
+		{// The current cell is a leaf!
+			quadTreeCell.LeafData = Fragment.ReadFragmentData(binaryReader);
+
+			return;
+		}
+
+		quadTreeCell.Split(null, null, null, null);
+
+		RecursivelyReadQuadTreeData(quadTreeCell.A, binaryReader);
+		RecursivelyReadQuadTreeData(quadTreeCell.B, binaryReader);
+		RecursivelyReadQuadTreeData(quadTreeCell.C, binaryReader);
+		RecursivelyReadQuadTreeData(quadTreeCell.D, binaryReader);
+	}
+
 	private static void RecursivelyAssembleOutputImage(QuadTreeCell<Fragment> fragmentCell, Image<Rgba32> outputImage, Rectangle rectangle)
 	{
 		Point point = new Point(rectangle.X, rectangle.Y);

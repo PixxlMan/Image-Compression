@@ -16,14 +16,42 @@ namespace Image_Compressor
 		public Fragment()
 		{
 		}
+		
+		/*public Fragment(BinaryReader binaryReader)
+		{
+		}*/
+
+		public abstract byte Id { get; }
+
 
 		public abstract void DrawRepresentation(Image<Rgba32> image, Rectangle rectangle);
 
+		protected abstract void WriteSpecificFragmentData(BinaryWriter binaryWriter);
+
+		protected abstract Fragment ReadSpecificFragmentData(BinaryReader binaryReader);
+
+		public static void WriteFragmentData(Fragment fragment, BinaryWriter binaryWriter)
+		{
+			binaryWriter.Write(fragment.Id);
+			fragment.WriteSpecificFragmentData(binaryWriter);
+		}
+
+		public static Fragment ReadFragmentData(BinaryReader binaryReader)
+		{
+			byte id = binaryReader.ReadByte();
+
+			return id switch
+			{
+				0 => new SingleColorFragment().ReadSpecificFragmentData(binaryReader),
+				1 => new FiveColorGradientFragment().ReadSpecificFragmentData(binaryReader),
+			};
+		}
+
 		public static Fragment GenerateFragment(Image<Rgba32> image, Rectangle rectangle)
 		{
-			return FiveColorGradientFragment.GenerateFragment(image, rectangle);
+			//return FiveColorGradientFragment.GenerateFragment(image, rectangle);
 
-			//return SingleColorFragment.GenerateFragment(image, rectangle);
+			return SingleColorFragment.GenerateFragment(image, rectangle);
 		}
 	}
 }

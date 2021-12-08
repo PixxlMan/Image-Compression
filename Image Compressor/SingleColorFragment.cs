@@ -18,7 +18,14 @@ namespace Image_Compressor
 			this.color = color;
 		}
 
+		public SingleColorFragment()
+		{
+
+		}
+
 		private Rgba32 color;
+
+		public override byte Id => 0;
 
 		public static SingleColorFragment GenerateFragment(Image<Rgba32> image, Rectangle rectangle)
 		{
@@ -30,6 +37,18 @@ namespace Image_Compressor
 		public override void DrawRepresentation(Image<Rgba32> image, Rectangle rectangle)
 		{
 			image.Mutate(i => i.Fill(new SolidBrush(color), new RectangularPolygon(rectangle)));
+		}
+
+		protected override void WriteSpecificFragmentData(BinaryWriter binaryWriter)
+		{
+			binaryWriter.Write(color.PackedValue);
+		}
+
+		protected override Fragment ReadSpecificFragmentData(BinaryReader binaryReader)
+		{
+			color = new Rgba32(binaryReader.ReadUInt32());
+
+			return this;
 		}
 	}
 }
