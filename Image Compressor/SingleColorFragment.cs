@@ -29,7 +29,13 @@ namespace Image_Compressor
 
 		public static SingleColorFragment GenerateFragment(Image<Rgba32> image, Rectangle rectangle)
 		{
-			SingleColorFragment fragment = new(image[rectangle.X + (rectangle.Width / 2), rectangle.Y + (rectangle.Height / 2)]);
+			int aR = ((int)image[rectangle.Left, rectangle.Top].R + (int)image[rectangle.Right - 1, rectangle.Top].R + (int)image[rectangle.Left, rectangle.Bottom - 1].R + (int)image[rectangle.Right - 1, rectangle.Bottom - 1].R + (int)image[rectangle.X + (rectangle.Width / 2), rectangle.Y + (rectangle.Height / 2)].R) / 5;
+			int aG = ((int)image[rectangle.Left, rectangle.Top].G + (int)image[rectangle.Right - 1, rectangle.Top].G + (int)image[rectangle.Left, rectangle.Bottom - 1].G + (int)image[rectangle.Right - 1, rectangle.Bottom - 1].G + (int)image[rectangle.X + (rectangle.Width / 2), rectangle.Y + (rectangle.Height / 2)].G) / 5;
+			int aB = ((int)image[rectangle.Left, rectangle.Top].B + (int)image[rectangle.Right - 1, rectangle.Top].B + (int)image[rectangle.Left, rectangle.Bottom - 1].B + (int)image[rectangle.Right - 1, rectangle.Bottom - 1].B + (int)image[rectangle.X + (rectangle.Width / 2), rectangle.Y + (rectangle.Height / 2)].B) / 5;
+
+			SingleColorFragment fragment = new(new Rgba32((byte)aR, (byte)aG, (byte)aB));
+			
+			//SingleColorFragment fragment = new(image[rectangle.X + (rectangle.Width / 2), rectangle.Y + (rectangle.Height / 2)]);
 
 			return fragment;
 		}
