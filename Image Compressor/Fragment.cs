@@ -44,6 +44,7 @@ namespace Image_Compressor
 			{
 				0 => new SingleColorFragment().ReadSpecificFragmentData(binaryReader),
 				1 => new FiveColorGradientFragment().ReadSpecificFragmentData(binaryReader),
+				2 => new LinearGradientFragment().ReadSpecificFragmentData(binaryReader),
 			};
 		}
 
@@ -52,6 +53,10 @@ namespace Image_Compressor
 			if (rectangle.Width < 16)
 			{
 				return SingleColorFragment.GenerateFragment(image, rectangle);
+			}
+			else if (rectangle.Width < 128)
+			{
+				return LinearGradientFragment.GenerateFragment(image, rectangle);
 			}
 
 			return FiveColorGradientFragment.GenerateFragment(image, rectangle);
