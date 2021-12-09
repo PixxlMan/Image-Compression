@@ -2,6 +2,7 @@
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using System.Numerics;
 
 namespace Image_Compressor;
 
@@ -11,7 +12,7 @@ public static class ImageCompressor
 	{
 		int limit = maxLimit;
 
-		int quadEdge = Math.Max(image.Width, image.Height);
+		int quadEdge = (int)BitOperations.RoundUpToPowerOf2((uint)Math.Max(image.Width, image.Height));
 		for (int i = 0; i < maxLimit; i++)
 		{
 			if ((quadEdge / 2) % 2 == 0)
@@ -28,7 +29,7 @@ public static class ImageCompressor
 			}
 		}
 
-		image.Mutate(i => i.Pad(Math.Max(image.Width, image.Height), Math.Max(image.Width, image.Height)));
+		image.Mutate(i => i.Pad((int)BitOperations.RoundUpToPowerOf2((uint)Math.Max(image.Width, image.Height)), (int)BitOperations.RoundUpToPowerOf2((uint)Math.Max(image.Width, image.Height))));
 
 		QuadTree<Rectangle> quadTree = new(image.Bounds());
 
