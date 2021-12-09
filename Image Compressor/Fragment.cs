@@ -49,9 +49,12 @@ namespace Image_Compressor
 
 		public static Fragment GenerateFragment(Image<Rgba32> image, Rectangle rectangle)
 		{
-			//return FiveColorGradientFragment.GenerateFragment(image, rectangle);
+			if (rectangle.Width < 16)
+			{
+				return SingleColorFragment.GenerateFragment(image, rectangle);
+			}
 
-			return SingleColorFragment.GenerateFragment(image, rectangle);
+			return FiveColorGradientFragment.GenerateFragment(image, rectangle);
 		}
 	}
 }
