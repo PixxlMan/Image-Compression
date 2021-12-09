@@ -64,6 +64,8 @@ public static class ImageCompressor
 		using BinaryWriter binaryWriter = new BinaryWriter(fileStream);
 
 		RecursivelyWriteQuadTreeData(fragmentTree.BaseNode, binaryWriter);
+
+		Console.WriteLine("saved");
 	}
 
 	public static void RecursivelyWriteQuadTreeData(QuadTreeCell<Fragment> quadTreeCell, BinaryWriter binaryWriter)
@@ -92,6 +94,8 @@ public static class ImageCompressor
 
 		RecursivelyReadQuadTreeData(fragmentTree.BaseNode, binaryReader);
 
+		Console.WriteLine("loaded");
+
 		return fragmentTree;
 	}
 
@@ -114,9 +118,6 @@ public static class ImageCompressor
 
 	private static void RecursivelyAssembleOutputImage(QuadTreeCell<Fragment> fragmentCell, Image<Rgba32> outputImage, Rectangle rectangle)
 	{
-		Point point = new Point(rectangle.X, rectangle.Y);
-		Size size = new Size(rectangle.Width, rectangle.Height);
-
 		if (fragmentCell.LeafData is not null)
 		{
 			fragmentCell.LeafData.DrawRepresentation(outputImage, rectangle);
