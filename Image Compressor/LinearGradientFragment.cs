@@ -31,9 +31,9 @@ namespace Image_Compressor
 
 		public override void DrawRepresentation(Image<Rgba32> image, Rectangle rectangle)
 		{
-			LinearGradientBrush linearGradientBrush = new(new PointF(rectangle.Left, rectangle.Top), new PointF(rectangle.Right - 1, rectangle.Bottom - 1), GradientRepetitionMode.DontFill, new ColorStop(0, aColor), new ColorStop(1, bColor));
+			LinearGradientBrush gradientBrush = new(new PointF(rectangle.Left, rectangle.Top), new PointF(rectangle.Right, rectangle.Bottom), GradientRepetitionMode.DontFill, new ColorStop(0f, new Color(aColor)), new ColorStop(1f, new Color(bColor)));
 
-			image.Mutate(i => i.Fill(linearGradientBrush));
+			image.Mutate(i => i.Fill(gradientBrush, new RectangularPolygon(rectangle)));
 		}
 
 		public static LinearGradientFragment GenerateFragment(Image<Rgba32> image, Rectangle rectangle)
