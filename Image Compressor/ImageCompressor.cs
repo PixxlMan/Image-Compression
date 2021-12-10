@@ -1,5 +1,7 @@
 ﻿using Quad_Tree;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing;
+using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System.Numerics;
@@ -12,7 +14,9 @@ public static class ImageCompressor
 	{
 		int limit = maxLimit;
 
-		int quadEdge = (int)BitOperations.RoundUpToPowerOf2((uint)Math.Max(image.Width, image.Height));
+		int edge = (int)BitOperations.RoundUpToPowerOf2((uint)Math.Max(image.Width, image.Height));
+
+		int quadEdge = edge;
 		for (int i = 0; i < maxLimit; i++)
 		{
 			if ((quadEdge / 2) % 2 == 0)
@@ -29,12 +33,18 @@ public static class ImageCompressor
 			}
 		}
 
-		image.Mutate(i => i.Pad((int)BitOperations.RoundUpToPowerOf2((uint)Math.Max(image.Width, image.Height)), (int)BitOperations.RoundUpToPowerOf2((uint)Math.Max(image.Width, image.Height))));
+		Rectangle imageBounds = image.Bounds();
+
+		image.Mutate(i => i.Pad(edge, edge));
 
 		QuadTree<Rectangle> quadTree = new(image.Bounds());
 
+		imageBounds.Offset((edge - imageBounds.Width) / 2, (edge - imageBounds.Height) / 2);
+
+		//image.Mutate(i => i.DrawPolygon(new Pen(Color.Blue, 4), new RectangularPolygon(imageBounds).Points.ToArray()));
+
 		int count = 0;
-		RecursivelyQuadrantise(image, quadTree.BaseNode, ((i, r) => CalculateImageComplexity(i, r) < complexityThreshold), limit, ref count);
+		RecursivelyQuadrantise(image, quadTree.BaseNode, ((i, r) => CalculateImageComplexity(i, r) < complexityThreshold), imageBounds, limit, ref count);
 
 		Console.WriteLine("quadrantized");
 
@@ -195,12 +205,16 @@ public static class ImageCompressor
 		}
 	}
 
-	static void RecursivelyQuadrantise(Image<Rgba32> image, QuadTreeCell<Rectangle> cell, Func<Image<Rgba32>, Rectangle, bool> quadrantizePredicate, int limit, ref int count, int parentSegment = -1, int level = 0)
+	static void RecursivelyQuadrantise(Image<Rgba32> image, QuadTreeCell<Rectangle> cell, Func<Image<Rgba32>, Rectangle, bool> quadrantizePredicate, Rectangle imageBounds, int limit, ref int count, int parentSegment = -1, int level = 0)
 	{
 		if (level > limit)
 			return;
 
 		if (quadrantizePredicate(image, cell.LeafData))
+			if (level > 5)
+				return;
+
+		if (!imageBounds.IntersectsWith(cell.LeafData))
 			return;
 
 		GetRectangleQuadrants(cell.LeafData, out var a1, out var b1, out var c1, out var d1);
@@ -218,7 +232,7 @@ public static class ImageCompressor
 				1 => cell.B,
 				2 => cell.C,
 				3 => cell.D,
-			}, quadrantizePredicate, limit, ref count, i + 1, level + 1);
+			}, quadrantizePredicate, imageBounds, limit, ref count, i + 1, level + 1);
 		}
 	}
 
