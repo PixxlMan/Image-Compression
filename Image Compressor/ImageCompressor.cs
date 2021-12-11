@@ -10,7 +10,7 @@ namespace Image_Compressor;
 
 public static class ImageCompressor
 {
-	public static QuadTree<Fragment> Compress(Image<Rgba32> image, float complexityThreshold, int maxLimit)
+	public static QuadTree<Fragment> Compress(Image<Rgba32> image, float complexityThreshold, int maxLimit, int minLimit)
 	{
 		int limit = maxLimit;
 
@@ -43,8 +43,7 @@ public static class ImageCompressor
 
 		//image.Mutate(i => i.DrawPolygon(new Pen(Color.Blue, 4), new RectangularPolygon(imageBounds).Points.ToArray()));
 
-		int count = 0;
-		RecursivelyQuadrantise(image, quadTree.BaseNode, ((i, r) => CalculateImageComplexity(i, r) < complexityThreshold), imageBounds, limit, ref count);
+		RecursivelyQuadrantise(image, quadTree.BaseNode, ((i, r) => CalculateImageComplexity(i, r) < complexityThreshold), imageBounds, limit, minLimit);
 
 		Console.WriteLine("quadrantized");
 
@@ -205,7 +204,7 @@ public static class ImageCompressor
 		}
 	}
 
-	static void RecursivelyQuadrantise(Image<Rgba32> image, QuadTreeCell<Rectangle> cell, Func<Image<Rgba32>, Rectangle, bool> quadrantizePredicate, Rectangle imageBounds, int limit, ref int count, int parentSegment = -1, int level = 0)
+	static void RecursivelyQuadrantise(Image<Rgba32> image, QuadTreeCell<Rectangle> cell, Func<Image<Rgba32>, Rectangle, bool> quadrantizePredicate, Rectangle imageBounds, int limit, int minLimit, int parentSegment = -1, int level = 0)
 	{
 		if (level > limit)
 			return;
@@ -221,8 +220,6 @@ public static class ImageCompressor
 
 		cell.Split(a1, b1, c1, d1);
 
-		count++;
-
 		for (int i = 0; i < 4; i++)
 		{
 			RecursivelyQuadrantise(image,
@@ -232,7 +229,7 @@ public static class ImageCompressor
 				1 => cell.B,
 				2 => cell.C,
 				3 => cell.D,
-			}, quadrantizePredicate, imageBounds, limit, ref count, i + 1, level + 1);
+			}, quadrantizePredicate, imageBounds, limit, minLimit, i + 1, level + 1);
 		}
 	}
 
