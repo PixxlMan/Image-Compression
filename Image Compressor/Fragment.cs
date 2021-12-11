@@ -50,16 +50,26 @@ namespace Image_Compressor
 
 		public static Fragment GenerateFragment(Image<Rgba32> image, Rectangle rectangle)
 		{
-			if (rectangle.Width < 16)
+			Rgba32 topLeftSample = image[rectangle.Left, rectangle.Top];
+			Rgba32 topRightSample = image[rectangle.Right - 1, rectangle.Top];
+			Rgba32 bottomLeftSample = image[rectangle.Left, rectangle.Bottom - 1];
+			Rgba32 bottomRightSample = image[rectangle.Right - 1, rectangle.Bottom - 1];
+			Rgba32 centerSample = image[rectangle.Left + (rectangle.Width / 2) - 1, rectangle.Top + (rectangle.Height / 2) - 1];
+
+			if (rectangle.Width < 16 && ColorUtils.ColorDistance(centerSample, topLeftSample) < 16)
 			{
 				return SingleColorFragment.GenerateFragment(image, rectangle);
 			}
 			else if (rectangle.Width < 128)
 			{
-				return LinearGradientFragment.GenerateFragment(image, rectangle);
+				if (topLeftSample.ColorDistance(bottomRightSample) > 16 || topRightSample.ColorDistance(bottomLeftSample) > 16)
+					return LinearGradientFragment.GenerateFragment(image, rectangle);
 			}
 
-			return FiveColorGradientFragment.GenerateFragment(image, rectangle);
+			if (topLeftSample.ColorDistance(bottomRightSample) > 32 && topRightSample.ColorDistance(bottomLeftSample) > 32)
+				return FiveColorGradientFragment.GenerateFragment(image, rectangle);
+
+			return SingleColorFragment.GenerateFragment(image, rectangle);
 		}
 	}
 }
