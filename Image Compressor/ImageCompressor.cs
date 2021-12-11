@@ -212,7 +212,7 @@ public static class ImageCompressor
 		if (!imageBounds.IntersectsWith(cell.LeafData))
 			return;
 
-		if (level > 5)
+		if (level > minLimit)
 			if (quadrantizePredicate(image, cell.LeafData))
 				return;
 
