@@ -27,7 +27,7 @@ namespace Image_Compressor
 		private Rgb24 aColor;
 		private Rgb24 bColor;
 
-		public override byte Id => 2;
+		public override byte Id => 20;
 
 		public override void DrawRepresentation(Image<Rgb24> image, Rectangle rectangle)
 		{

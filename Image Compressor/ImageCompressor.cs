@@ -43,15 +43,11 @@ public static class ImageCompressor
 
 		//image.Mutate(i => i.DrawPolygon(new Pen(Color.Blue, 4), new RectangularPolygon(imageBounds).Points.ToArray()));
 
-		RecursivelyQuadrantise(image, quadTree.BaseNode, ((i, r) => CalculateImageComplexity(i, r) < complexityThreshold), imageBounds, limit, minLimit);
-
-		Console.WriteLine("quadrantized");
-
 		QuadTree<Fragment> fragmentTree = new(null);
 
-		RecursivelyPopulateFragmentTree(fragmentTree.BaseNode, quadTree.BaseNode, image);
+		RecursivelyGenerateFragmentTree(fragmentTree.BaseNode, image, ((i, r) => CalculateImageComplexity(i, r) < complexityThreshold), imageBounds, image.Bounds(), limit, minLimit);
 
-		Console.WriteLine("populated frag tree");
+		Console.WriteLine("generated fragment tree");
 
 		return fragmentTree;
 	}
@@ -175,62 +171,32 @@ public static class ImageCompressor
 		d = new Rectangle(rectangle.Width / 2, rectangle.Height / 2, rectangle.Width / 2, rectangle.Height / 2);
 	}
 
-	private static void RecursivelyPopulateFragmentTree(QuadTreeCell<Fragment> fragmentCell, QuadTreeCell<Rectangle> imageRectangleCell, Image<Rgb24> image)
-	{
-		if (imageRectangleCell.IsLeaf)
-		{
-			fragmentCell.LeafData = Fragment.GenerateFragment(image, imageRectangleCell.LeafData);
-
-			return;
-		}
-
-		fragmentCell.Split(null, null, null, null);
-
-		for (int i = 0; i < 4; i++)
-		{
-			RecursivelyPopulateFragmentTree(i switch
-			{
-				0 => fragmentCell.A,
-				1 => fragmentCell.B,
-				2 => fragmentCell.C,
-				3 => fragmentCell.D,
-			}, i switch
-			{
-				0 => imageRectangleCell.A,
-				1 => imageRectangleCell.B,
-				2 => imageRectangleCell.C,
-				3 => imageRectangleCell.D,
-			}, image);
-		}
-	}
-
-	static void RecursivelyQuadrantise(Image<Rgb24> image, QuadTreeCell<Rectangle> cell, Func<Image<Rgb24>, Rectangle, bool> quadrantizePredicate, Rectangle imageBounds, int limit, int minLimit, int parentSegment = -1, int level = 0)
+	private static void RecursivelyGenerateFragmentTree(QuadTreeCell<Fragment> fragmentCell, Image<Rgb24> image, Func<Image<Rgb24>, Rectangle, bool> quadrantizePredicate, Rectangle imageBounds, Rectangle rectangle, int limit, int minLimit, int level = 0)
 	{
 		if (level > limit)
 			return;
 
-		if (!imageBounds.IntersectsWith(cell.LeafData))
+		if (!imageBounds.IntersectsWith(rectangle))
+		{
+			fragmentCell.LeafData = new EmptyFragment();
 			return;
+		}
 
 		if (level > minLimit)
-			if (quadrantizePredicate(image, cell.LeafData))
-				return;
-
-		GetRectangleQuadrants(cell.LeafData, out var a1, out var b1, out var c1, out var d1);
-
-		cell.Split(a1, b1, c1, d1);
-
-		for (int i = 0; i < 4; i++)
-		{
-			RecursivelyQuadrantise(image,
-			i switch
+			if (quadrantizePredicate(image, rectangle))
 			{
-				0 => cell.A,
-				1 => cell.B,
-				2 => cell.C,
-				3 => cell.D,
-			}, quadrantizePredicate, imageBounds, limit, minLimit, i + 1, level + 1);
-		}
+				fragmentCell.LeafData = Fragment.GenerateFragment(image, rectangle);
+				return;
+			}
+
+		GetRectangleQuadrants(rectangle, out var a1, out var b1, out var c1, out var d1);
+
+		fragmentCell.Split(null, null, null, null);
+
+		RecursivelyGenerateFragmentTree(fragmentCell.A, image, quadrantizePredicate, imageBounds, a1, limit, minLimit, level + 1);
+		RecursivelyGenerateFragmentTree(fragmentCell.B, image, quadrantizePredicate, imageBounds, b1, limit, minLimit, level + 1);
+		RecursivelyGenerateFragmentTree(fragmentCell.C, image, quadrantizePredicate, imageBounds, c1, limit, minLimit, level + 1);
+		RecursivelyGenerateFragmentTree(fragmentCell.D, image, quadrantizePredicate, imageBounds, d1, limit, minLimit, level + 1);
 	}
 
 	public static double CalculateImageComplexity(Image<Rgb24> image, Rectangle rectangle)

@@ -25,7 +25,7 @@ namespace Image_Compressor
 
 		private Rgb24 color;
 
-		public override byte Id => 0;
+		public override byte Id => 10;
 
 		public static SingleColorFragment GenerateFragment(Image<Rgb24> image, Rectangle rectangle)
 		{
