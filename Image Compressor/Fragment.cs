@@ -24,7 +24,7 @@ namespace Image_Compressor
 		public abstract byte Id { get; }
 
 
-		public abstract void DrawRepresentation(Image<Rgba32> image, Rectangle rectangle);
+		public abstract void DrawRepresentation(Image<Rgb24> image, Rectangle rectangle);
 
 		protected abstract void WriteSpecificFragmentData(BinaryWriter binaryWriter);
 
@@ -48,13 +48,9 @@ namespace Image_Compressor
 			};
 		}
 
-		public static Fragment GenerateFragment(Image<Rgba32> image, Rectangle rectangle)
+		public static Fragment GenerateFragment(Image<Rgb24> image, Rectangle rectangle)
 		{
-			Rgba32 topLeftSample = image[rectangle.Left, rectangle.Top];
-			Rgba32 topRightSample = image[rectangle.Right - 1, rectangle.Top];
-			Rgba32 bottomLeftSample = image[rectangle.Left, rectangle.Bottom - 1];
-			Rgba32 bottomRightSample = image[rectangle.Right - 1, rectangle.Bottom - 1];
-			Rgba32 centerSample = image[rectangle.Left + (rectangle.Width / 2) - 1, rectangle.Top + (rectangle.Height / 2) - 1];
+			image.GetFivePointSamples(rectangle, out Rgb24 topLeftSample, out Rgb24 topRightSample, out Rgb24 bottomLeftSample, out Rgb24 bottomRightSample, out Rgb24 centerSample);
 
 			if (rectangle.Width < 16 && ColorUtils.ColorDistance(centerSample, topLeftSample) < 16)
 			{

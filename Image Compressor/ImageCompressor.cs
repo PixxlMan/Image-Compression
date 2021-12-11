@@ -10,7 +10,7 @@ namespace Image_Compressor;
 
 public static class ImageCompressor
 {
-	public static QuadTree<Fragment> Compress(Image<Rgba32> image, float complexityThreshold, int maxLimit, int minLimit)
+	public static QuadTree<Fragment> Compress(Image<Rgb24> image, float complexityThreshold, int maxLimit, int minLimit)
 	{
 		int limit = maxLimit;
 
@@ -56,9 +56,9 @@ public static class ImageCompressor
 		return fragmentTree;
 	}
 
-	public static Image<Rgba32> Decompress(QuadTree<Fragment> fragmentTree, int width, int height)
+	public static Image<Rgb24> Decompress(QuadTree<Fragment> fragmentTree, int width, int height)
 	{
-		Image<Rgba32> outputImage = new Image<Rgba32>(width, height);
+		Image<Rgb24> outputImage = new Image<Rgb24>(width, height);
 		RecursivelyAssembleOutputImage(fragmentTree.BaseNode, outputImage, new Rectangle(0, 0, width, height));
 		outputImage.SaveAsBmp(@$"R:\output.bmp");
 
@@ -126,7 +126,7 @@ public static class ImageCompressor
 		RecursivelyReadQuadTreeData(quadTreeCell.D, binaryReader);
 	}
 
-	private static void RecursivelyAssembleOutputImage(QuadTreeCell<Fragment> fragmentCell, Image<Rgba32> outputImage, Rectangle rectangle)
+	private static void RecursivelyAssembleOutputImage(QuadTreeCell<Fragment> fragmentCell, Image<Rgb24> outputImage, Rectangle rectangle)
 	{
 		if (fragmentCell.LeafData is not null)
 		{
@@ -175,7 +175,7 @@ public static class ImageCompressor
 		d = new Rectangle(rectangle.Width / 2, rectangle.Height / 2, rectangle.Width / 2, rectangle.Height / 2);
 	}
 
-	private static void RecursivelyPopulateFragmentTree(QuadTreeCell<Fragment> fragmentCell, QuadTreeCell<Rectangle> imageRectangleCell, Image<Rgba32> image)
+	private static void RecursivelyPopulateFragmentTree(QuadTreeCell<Fragment> fragmentCell, QuadTreeCell<Rectangle> imageRectangleCell, Image<Rgb24> image)
 	{
 		if (imageRectangleCell.IsLeaf)
 		{
@@ -204,7 +204,7 @@ public static class ImageCompressor
 		}
 	}
 
-	static void RecursivelyQuadrantise(Image<Rgba32> image, QuadTreeCell<Rectangle> cell, Func<Image<Rgba32>, Rectangle, bool> quadrantizePredicate, Rectangle imageBounds, int limit, int minLimit, int parentSegment = -1, int level = 0)
+	static void RecursivelyQuadrantise(Image<Rgb24> image, QuadTreeCell<Rectangle> cell, Func<Image<Rgb24>, Rectangle, bool> quadrantizePredicate, Rectangle imageBounds, int limit, int minLimit, int parentSegment = -1, int level = 0)
 	{
 		if (level > limit)
 			return;
@@ -233,13 +233,13 @@ public static class ImageCompressor
 		}
 	}
 
-	public static double CalculateImageComplexity(Image<Rgba32> image, Rectangle rectangle)
+	public static double CalculateImageComplexity(Image<Rgb24> image, Rectangle rectangle)
 	{
 		return GetEntropy(image, rectangle, 256);
 	}
 
 	// (Modified and translated to C#) From: https://github.com/Jeanvit/CakeImageAnalyzer/blob/master/src/cake/classes/ImageUtils.java
-	public static int[] GenerateHistogram(Image<Rgba32> image, Rectangle rectangle, int numberOfBins)
+	public static int[] GenerateHistogram(Image<Rgb24> image, Rectangle rectangle, int numberOfBins)
 	{
 		int[] bins = new int[numberOfBins];
 		int intensity;
@@ -247,7 +247,7 @@ public static class ImageCompressor
 		{
 			for (int j = rectangle.Top; j <= rectangle.Bottom - 1; j++)
 			{
-				intensity = (image[i, j].R / 4) + (image[i, j].G / 4) + (image[i, j].B / 4) + (image[i, j].A / 4);
+				intensity = (image[i, j].R / 3) + (image[i, j].G / 3) + (image[i, j].B / 3);
 				bins[intensity]++;
 			}
 		}
@@ -255,7 +255,7 @@ public static class ImageCompressor
 	}
 
 	// (Modified and translated to C#) From: https://github.com/Jeanvit/CakeImageAnalyzer/blob/master/src/cake/classes/ImageUtils.java
-	public static double GetEntropy(Image<Rgba32> image, Rectangle rectangle, int maxValue)
+	public static double GetEntropy(Image<Rgb24> image, Rectangle rectangle, int maxValue)
 	{
 		int[] bins = GenerateHistogram(image, rectangle, maxValue);
 		double entropyValue = 0, temp;
