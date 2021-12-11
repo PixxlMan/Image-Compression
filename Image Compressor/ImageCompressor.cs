@@ -210,12 +210,12 @@ public static class ImageCompressor
 		if (level > limit)
 			return;
 
-		if (quadrantizePredicate(image, cell.LeafData))
-			if (level > 5)
-				return;
-
 		if (!imageBounds.IntersectsWith(cell.LeafData))
 			return;
+
+		if (level > 5)
+			if (quadrantizePredicate(image, cell.LeafData))
+				return;
 
 		GetRectangleQuadrants(cell.LeafData, out var a1, out var b1, out var c1, out var d1);
 
