@@ -2,19 +2,10 @@
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
-var image = Image.Load<Rgba32>(@"R:\Image.jpg");
-var output = ImageCompressor.Compress(image, 1.5f, 12);
+var image = Image.Load<Rgb24>(@"R:\Image.jpg");
+var output = ImageCompressor.Compress(image, 3, 100, 10);
+ImageCompressor.SaveToFile(output, @"R:\compressed");
 ImageCompressor.Decompress(output, Math.Max(image.Width, image.Height), Math.Max(image.Width, image.Height));
+//ImageCompressor.Decompress(ImageCompressor.LoadFromFile(@"R:\compressed"), Math.Max(image.Width, image.Height), Math.Max(image.Width, image.Height));
 
-//Console.WriteLine(ImageCompressor.CalculateImageComplexity(Image.Load(@"R:\_Image.png")));
-
-/*ImageCompressor.GetImageQuadrants(Image.Load<Rgba32>(@"R:\_Image.jpeg"), out var a, out var b, out var c, out var d);
-a.SaveAsBmp(@"R:\a.bmp"); 
-b.SaveAsBmp(@"R:\b.bmp");
-c.SaveAsBmp(@"R:\c.bmp");
-d.SaveAsBmp(@"R:\d.bmp");*/
-
-/*Console.WriteLine(ImageCompressor.CalculateImageComplexity(a));
-Console.WriteLine(ImageCompressor.CalculateImageComplexity(b));
-Console.WriteLine(ImageCompressor.CalculateImageComplexity(c));
-Console.WriteLine(ImageCompressor.CalculateImageComplexity(d));*/
+//ImageCompressor.Decompress(ImageCompressor.LoadFromFile(@"R:\compressed"), 1024, 1024);
