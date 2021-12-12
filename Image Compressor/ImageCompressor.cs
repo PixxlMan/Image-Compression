@@ -173,8 +173,6 @@ public static class ImageCompressor
 
 	private static void RecursivelyGenerateFragmentTree(QuadTreeCell<Fragment> fragmentCell, Image<Rgb24> image, Func<Image<Rgb24>, Rectangle, bool> quadrantizePredicate, Rectangle imageBounds, Rectangle rectangle, int limit, int minLimit, int level = 0)
 	{
-		if (level > limit)
-			return;
 
 		if (!imageBounds.IntersectsWith(rectangle))
 		{
@@ -188,6 +186,12 @@ public static class ImageCompressor
 				fragmentCell.LeafData = Fragment.GenerateFragment(image, rectangle);
 				return;
 			}
+
+		if (level + 1 > limit)
+		{
+			fragmentCell.LeafData = Fragment.GenerateFragment(image, rectangle);
+			return;
+		}
 
 		GetRectangleQuadrants(rectangle, out var a1, out var b1, out var c1, out var d1);
 
