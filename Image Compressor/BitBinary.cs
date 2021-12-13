@@ -25,11 +25,9 @@ namespace Image_Compressor
 		public void WriteBit(bool bit)
 		{
 			if (bit)
-			{
 				internalByte = (byte)(internalByte | (1 << bitIndex));
 
-				bitIndex++;
-			}
+			bitIndex++;
 
 			if (bitIndex > 7)
 			{
@@ -43,7 +41,7 @@ namespace Image_Compressor
 		{
 			//byte rem = (byte)(@byte >> bitIndex);
 			binaryWriter.Write((byte)(internalByte | /*rem*/ (@byte >> bitIndex)));
-			internalByte = 0;
+			internalByte = (byte)(@byte << bitIndex);
 		}
 
 		public void WriteInt(int @int)
@@ -76,7 +74,7 @@ namespace Image_Compressor
 			{
 				if (disposing)
 				{
-					binaryWriter.Write(internalByte);
+					binaryWriter.Write(internalByte << bitIndex);
 				}
 
 				disposedValue = true;
@@ -96,25 +94,30 @@ namespace Image_Compressor
 		{
 			this.binaryReader = binaryReader;
 
-			internalByte = binaryReader.ReadByte();
+			FillBitArray();
 		}
 
 		private BinaryReader binaryReader;
 
-		private byte internalByte;
+		private BitArray bitArray;
 
 		private byte bitIndex;
 
+		private void FillBitArray()
+		{
+			var @byte = new byte[] { binaryReader.ReadByte() };
+			bitArray = new(@byte);
+		}
+
 		public bool ReadBit()
 		{
-			bool bit = (internalByte & (1 << bitIndex)) != 0;
+			bool bit = bitArray[7 - bitIndex];
 
 			bitIndex++;
 
 			if (bitIndex > 7)
 			{
-				internalByte = binaryReader.ReadByte();
-				bitIndex = 0;
+				FillBitArray();
 			}
 
 			return bit;
@@ -122,41 +125,29 @@ namespace Image_Compressor
 
 		public byte ReadByte()
 		{
-			byte val = (byte)(internalByte << bitIndex);
+			BitArray byteBits = new(bitArray);
+			byteBits.LeftShift(bitIndex)/*.RightShift(bitIndex)*/;
 
-			internalByte = binaryReader.ReadByte();
+			FillBitArray();
+			BitArray byteSecondPart = new(bitArray);
+			byteSecondPart.LeftShift(bitIndex).RightShift(bitIndex);
+			byteBits.Or(byteSecondPart);
 
-			byte mask = (byte)(0b_1111_1111 << bitIndex);
-
-			val = (byte)((val & mask) | ((~mask) & internalByte));
-
-			return val;
+			byte[] @byte = new byte[1];
+			byteBits.CopyTo(@byte, 0);
+			return @byte[0];
 		}
 
 		public int ReadInt()
 		{
-			int val = (internalByte << bitIndex) << ((8 * 3) + bitIndex);
-			val = val | (binaryReader.ReadByte() << ((8 * 2) + bitIndex));
-			val = val | (binaryReader.ReadByte() << ((8 * 1) + bitIndex));
-			val = val | (binaryReader.ReadByte() << bitIndex);
-
-			internalByte = binaryReader.ReadByte();
-
-			val = val | ((internalByte << bitIndex) >> bitIndex);
+			int val = (ReadByte() << (8 * 3)) | (ReadByte() << (8 * 2)) | (ReadByte() << (8 * 1)) | (ReadByte() << (8 * 0));
 
 			return val;
 		}
 
 		public uint ReadUInt()
 		{
-			uint val = (uint)((internalByte << bitIndex) << ((8 * 3) + bitIndex));
-			val = (uint)(val | (binaryReader.ReadByte() << ((8 * 2) + bitIndex)));
-			val = (uint)(val | (binaryReader.ReadByte() << ((8 * 1) + bitIndex)));
-			val = (uint)(val | (binaryReader.ReadByte() << bitIndex));
-
-			internalByte = binaryReader.ReadByte();
-
-			val = (uint)(val | ((internalByte << bitIndex) >> bitIndex));
+			uint val = (uint)((ReadByte() << (8 * 3)) | (ReadByte() << (8 * 2)) | (ReadByte() << (8 * 1)) | (ReadByte() << (8 * 0)));
 
 			return val;
 		}
