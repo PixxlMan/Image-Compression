@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections;
 
 namespace Image_Compressor
 {
@@ -12,59 +7,63 @@ namespace Image_Compressor
 		public BitBinaryWriter(BinaryWriter binaryWriter)
 		{
 			this.binaryWriter = binaryWriter;
+
+			bitArray = new BitArray(8);
 		}
 
 		private BinaryWriter binaryWriter;
 
-		private byte internalByte;
+		private BitArray bitArray;
 
 		private byte bitIndex;
 
 		private bool disposedValue;
 
+		private void WriteBitArray()
+		{
+			byte[] @byte = new byte[1];
+			bitArray.CopyTo(@byte, 0);
+			bitIndex = 0;
+			binaryWriter.Write(@byte);
+		}
+
+
 		public void WriteBit(bool bit)
 		{
-			if (bit)
-				internalByte = (byte)(internalByte | (1 << bitIndex));
+			bitArray.Set(bitIndex, bit);
 
 			bitIndex++;
 
 			if (bitIndex > 7)
 			{
-				binaryWriter.Write(internalByte);
-				internalByte = 0;
-				bitIndex = 0;
+				WriteBitArray();
 			}
 		}
-		
+
 		public void WriteByte(byte @byte)
 		{
-			//byte rem = (byte)(@byte >> bitIndex);
-			binaryWriter.Write((byte)(internalByte | /*rem*/ (@byte >> bitIndex)));
-			internalByte = (byte)(@byte << bitIndex);
+			for (int i = 0; i < sizeof(byte) * 8; i++)
+			{
+				bool bit = (@byte & (1 << i)) != 0;
+				WriteBit(bit);
+			}
 		}
 
 		public void WriteInt(int @int)
 		{
-			int val = internalByte | @int >> bitIndex;
-
-			binaryWriter.Write(val);
-
-			unchecked
+			for (int i = 0; i < sizeof(int) * 8; i++)
 			{
-				internalByte = (byte)@int;
+				bool bit = (@int & (1 << i)) != 0;
+				WriteBit(bit);
 			}
 		}
 
 		public void WriteUInt(uint @uint)
 		{
-			uint val = internalByte | @uint >> bitIndex;
-
-			binaryWriter.Write(val);
-
-			unchecked
+			for (int i = 0; i < sizeof(uint) * 8; i++)
 			{
-				internalByte = (byte)@uint;
+				bool bit = (@uint & (1 << i)) != 0;
+				WriteBit(bit);
 			}
 		}
 
@@ -74,7 +73,7 @@ namespace Image_Compressor
 			{
 				if (disposing)
 				{
-					binaryWriter.Write(internalByte << bitIndex);
+					WriteBitArray();
 				}
 
 				disposedValue = true;
@@ -118,6 +117,7 @@ namespace Image_Compressor
 			if (bitIndex > 7)
 			{
 				FillBitArray();
+				bitIndex = 0;
 			}
 
 			return bit;
@@ -125,13 +125,12 @@ namespace Image_Compressor
 
 		public byte ReadByte()
 		{
-			BitArray byteBits = new(bitArray);
-			byteBits.LeftShift(bitIndex)/*.RightShift(bitIndex)*/;
+			BitArray byteBits = new(sizeof(byte) * 8);
 
-			FillBitArray();
-			BitArray byteSecondPart = new(bitArray);
-			byteSecondPart.LeftShift(bitIndex).RightShift(bitIndex);
-			byteBits.Or(byteSecondPart);
+			for (int i = 0; i < byteBits.Length; i++)
+			{
+				byteBits[(sizeof(byte) * 8) - i - 1] = ReadBit();
+			}
 
 			byte[] @byte = new byte[1];
 			byteBits.CopyTo(@byte, 0);
@@ -140,16 +139,30 @@ namespace Image_Compressor
 
 		public int ReadInt()
 		{
-			int val = (ReadByte() << (8 * 3)) | (ReadByte() << (8 * 2)) | (ReadByte() << (8 * 1)) | (ReadByte() << (8 * 0));
+			BitArray intBits = new(sizeof(int) * 8);
 
-			return val;
+			for (int i = 0; i < intBits.Length; i++)
+			{
+				intBits[(sizeof(int) * 8) - i - 1] = ReadBit();
+			}
+
+			int[] @int = new int[1];
+			intBits.CopyTo(@int, 0);
+			return @int[0];
 		}
 
 		public uint ReadUInt()
 		{
-			uint val = (uint)((ReadByte() << (8 * 3)) | (ReadByte() << (8 * 2)) | (ReadByte() << (8 * 1)) | (ReadByte() << (8 * 0)));
+			BitArray uintBits = new(sizeof(uint) * 8);
 
-			return val;
+			for (int i = 0; i < uintBits.Length; i++)
+			{
+				uintBits[(sizeof(uint) * 8) - i - 1] = ReadBit();
+			}
+
+			uint[] @int = new uint[1];
+			uintBits.CopyTo(@int, 0);
+			return @int[0];
 		}
 	}
 }
