@@ -139,30 +139,16 @@ namespace Image_Compressor
 
 		public int ReadInt()
 		{
-			BitArray intBits = new(sizeof(int) * 8);
+			int @int = BitConverter.ToInt32(new byte[] { ReadByte(), ReadByte(), ReadByte(), ReadByte() });
 
-			for (int i = 0; i < intBits.Length; i++)
-			{
-				intBits[(sizeof(int) * 8) - i - 1] = ReadBit();
-			}
-
-			int[] @int = new int[1];
-			intBits.CopyTo(@int, 0);
-			return @int[0];
+			return @int;
 		}
 
 		public uint ReadUInt()
 		{
-			BitArray uintBits = new(sizeof(uint) * 8);
+			uint @uint = BitConverter.ToUInt32(new byte[] { ReadByte(), ReadByte(), ReadByte(), ReadByte() });
 
-			for (int i = 0; i < uintBits.Length; i++)
-			{
-				uintBits[(sizeof(uint) * 8) - i - 1] = ReadBit();
-			}
-
-			uint[] @int = new uint[1];
-			uintBits.CopyTo(@int, 0);
-			return @int[0];
+			return @uint;
 		}
 	}
 }
