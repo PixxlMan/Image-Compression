@@ -33,23 +33,23 @@ namespace Image_Compressor
 		private Rgb24 dColor;
 		private Rgb24 centerColor;
 
-		public override byte Id => 30;
+		public byte Id => 30;
 
-		public override void DrawRepresentation(Image<Rgb24> image, Rectangle rectangle)
+		public void DrawRepresentation(Image<Rgb24> image, Rectangle rectangle)
 		{
 			PathGradientBrush pathGradientBrush = new PathGradientBrush(new RectangularPolygon(rectangle).Points.ToArray(), new Color[] { aColor, bColor, dColor, cColor }, centerColor);
 
 			image.Mutate(i => i.Fill(pathGradientBrush));
 		}
 
-		public static FiveColorGradientFragment GenerateFragment(Image<Rgb24> image, Rectangle rectangle)
+		static Fragment Fragment.GenerateSpecificFragment(Image<Rgb24> image, Rectangle rectangle)
 		{
 			FiveColorGradientFragment fragment = new(image[rectangle.Left, rectangle.Top], image[rectangle.Right - 1, rectangle.Top], image[rectangle.Left, rectangle.Bottom - 1], image[rectangle.Right - 1, rectangle.Bottom - 1], image[rectangle.X + (rectangle.Width / 2), rectangle.Y + (rectangle.Height / 2)]);
 
 			return fragment;
 		}
 
-		protected override void WriteSpecificFragmentData(BinaryWriter binaryWriter)
+		void Fragment.WriteSpecificFragmentData(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write(aColor);
 			binaryWriter.Write(bColor);
@@ -58,15 +58,15 @@ namespace Image_Compressor
 			binaryWriter.Write(centerColor);
 		}
 
-		protected override Fragment ReadSpecificFragmentData(BinaryReader binaryReader)
+		static Fragment Fragment.ReadSpecificFragmentData(BinaryReader binaryReader)
 		{
-			aColor = binaryReader.ReadColor();
-			bColor = binaryReader.ReadColor();
-			cColor = binaryReader.ReadColor();
-			dColor = binaryReader.ReadColor();
-			centerColor = binaryReader.ReadColor();
+			var aColor = binaryReader.ReadColor();
+			var bColor = binaryReader.ReadColor();
+			var cColor = binaryReader.ReadColor();
+			var dColor = binaryReader.ReadColor();
+			var centerColor = binaryReader.ReadColor();
 
-			return this;
+			return new FiveColorGradientFragment(aColor, bColor, cColor, dColor, centerColor);
 		}
 	}
 }

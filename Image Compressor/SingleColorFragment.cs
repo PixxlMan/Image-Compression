@@ -25,9 +25,9 @@ namespace Image_Compressor
 
 		private Rgb24 color;
 
-		public override byte Id => 10;
+		public byte Id => 10;
 
-		public static SingleColorFragment GenerateFragment(Image<Rgb24> image, Rectangle rectangle)
+		public static Fragment GenerateSpecificFragment(Image<Rgb24> image, Rectangle rectangle)
 		{
 			Rgb24 avgColor = ColorUtils.AverageColor(image.GetFivePointSamples(rectangle));
 
@@ -38,21 +38,21 @@ namespace Image_Compressor
 			return fragment;
 		}
 
-		public override void DrawRepresentation(Image<Rgb24> image, Rectangle rectangle)
+		public void DrawRepresentation(Image<Rgb24> image, Rectangle rectangle)
 		{
 			image.Mutate(i => i.Fill(new SolidBrush(color), new RectangularPolygon(rectangle)));
 		}
 
-		protected override void WriteSpecificFragmentData(BinaryWriter binaryWriter)
+		void Fragment.WriteSpecificFragmentData(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write(color);
 		}
 
-		protected override Fragment ReadSpecificFragmentData(BinaryReader binaryReader)
+		static Fragment Fragment.ReadSpecificFragmentData(BinaryReader binaryReader)
 		{
-			color = binaryReader.ReadColor();
+			var color = binaryReader.ReadColor();
 
-			return this;
+			return new SingleColorFragment(color);
 		}
 	}
 }

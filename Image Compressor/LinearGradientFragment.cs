@@ -27,34 +27,34 @@ namespace Image_Compressor
 		private Rgb24 aColor;
 		private Rgb24 bColor;
 
-		public override byte Id => 20;
+		public byte Id => 20;
 
-		public override void DrawRepresentation(Image<Rgb24> image, Rectangle rectangle)
+		public void DrawRepresentation(Image<Rgb24> image, Rectangle rectangle)
 		{
 			LinearGradientBrush gradientBrush = new(new PointF(rectangle.Left, rectangle.Top), new PointF(rectangle.Right, rectangle.Bottom), GradientRepetitionMode.DontFill, new ColorStop(0f, new Color(aColor)), new ColorStop(1f, new Color(bColor)));
 
 			image.Mutate(i => i.Fill(gradientBrush, new RectangularPolygon(rectangle)));
 		}
 
-		public static LinearGradientFragment GenerateFragment(Image<Rgb24> image, Rectangle rectangle)
+		static Fragment Fragment.GenerateSpecificFragment(Image<Rgb24> image, Rectangle rectangle)
 		{
 			LinearGradientFragment fragment = new(image[rectangle.Left, rectangle.Top], image[rectangle.Right - 1, rectangle.Bottom - 1]);
 
 			return fragment;
 		}
 
-		protected override void WriteSpecificFragmentData(BinaryWriter binaryWriter)
+		void Fragment.WriteSpecificFragmentData(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write(aColor);
 			binaryWriter.Write(bColor);
 		}
 
-		protected override Fragment ReadSpecificFragmentData(BinaryReader binaryReader)
+		static Fragment Fragment.ReadSpecificFragmentData(BinaryReader binaryReader)
 		{
-			aColor = binaryReader.ReadColor();
-			bColor = binaryReader.ReadColor();
+			var aColor = binaryReader.ReadColor();
+			var bColor = binaryReader.ReadColor();
 
-			return this;
+			return new LinearGradientFragment(aColor, bColor);
 		}
 	}
 }

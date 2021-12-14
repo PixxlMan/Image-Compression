@@ -3,33 +3,33 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace Image_Compressor
 {
-	public class EmptyFragment : Fragment
+	public sealed class EmptyFragment : Fragment
 	{
 		public EmptyFragment()
 		{
 
 		}
 
-		public override byte Id => 0;
+		public byte Id => 0;
 
 		public static SingleColorFragment GenerateFragment(Image<Rgb24> image, Rectangle rectangle)
 		{
 			return new();
 		}
 
-		public override void DrawRepresentation(Image<Rgb24> image, Rectangle rectangle)
+		public void DrawRepresentation(Image<Rgb24> image, Rectangle rectangle)
 		{
 			
 		}
 
-		protected override void WriteSpecificFragmentData(BinaryWriter binaryWriter)
+		void Fragment.WriteSpecificFragmentData(BinaryWriter binaryWriter)
 		{
 
 		}
 
-		protected override Fragment ReadSpecificFragmentData(BinaryReader binaryReader)
+		static abstract Fragment Fragment.ReadSpecificFragmentData(BinaryReader binaryReader)
 		{
-			return this;
+			return new EmptyFragment();
 		}
 	}
 }
