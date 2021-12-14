@@ -68,7 +68,7 @@ public static class ImageCompressor
 		File.Delete(path);
 		using FileStream fileStream = File.OpenWrite(path);
 		using BinaryWriter binaryWriter = new BinaryWriter(fileStream);
-		BitBinaryWriter bitBinaryWriter = new BitBinaryWriter(binaryWriter);
+		using BitBinaryWriter bitBinaryWriter = new BitBinaryWriter(binaryWriter);
 
 		RecursivelyWriteQuadTreeData(fragmentTree.BaseNode, bitBinaryWriter);
 
@@ -115,7 +115,7 @@ public static class ImageCompressor
 			Console.Write("-Leaf");
 #endif
 
-			quadTreeCell.LeafData = Fragment.ReadFragmentData(binaryReader);
+			quadTreeCell.Unify(Fragment.ReadFragmentData(binaryReader));
 
 			return;
 		}
