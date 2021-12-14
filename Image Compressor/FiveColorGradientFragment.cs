@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Image_Compressor
 {
-	public sealed class FiveColorGradientFragment : Fragment
+	public struct FiveColorGradientFragment : Fragment
 	{
 		public FiveColorGradientFragment(Rgb24 aColor, Rgb24 bColor, Rgb24 cColor, Rgb24 dColor, Rgb24 centerColor)
 		{
@@ -20,11 +20,6 @@ namespace Image_Compressor
 			this.cColor = cColor;
 			this.dColor = dColor;
 			this.centerColor = centerColor;
-		}
-
-		public FiveColorGradientFragment()
-		{
-
 		}
 
 		private Rgb24 aColor;

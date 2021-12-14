@@ -11,16 +11,11 @@ using System.Threading.Tasks;
 
 namespace Image_Compressor
 {
-	public sealed class SingleColorFragment : Fragment
+	public struct SingleColorFragment : Fragment
 	{
 		public SingleColorFragment(Rgb24 color)
 		{
 			this.color = color;
-		}
-
-		public SingleColorFragment()
-		{
-
 		}
 
 		private Rgb24 color;
@@ -40,7 +35,9 @@ namespace Image_Compressor
 
 		public void DrawRepresentation(Image<Rgb24> image, Rectangle rectangle)
 		{
-			image.Mutate(i => i.Fill(new SolidBrush(color), new RectangularPolygon(rectangle)));
+			var @this = this;
+
+			image.Mutate(i => i.Fill(new SolidBrush(@this.color), new RectangularPolygon(rectangle)));
 		}
 
 		public void WriteSpecificFragmentData(BitBinaryWriter binaryWriter)

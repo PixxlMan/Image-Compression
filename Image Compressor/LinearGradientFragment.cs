@@ -11,17 +11,12 @@ using System.Threading.Tasks;
 
 namespace Image_Compressor
 {
-	public sealed class LinearGradientFragment : Fragment
+	public struct LinearGradientFragment : Fragment
 	{
 		public LinearGradientFragment(Rgb24 aColor, Rgb24 bColor)
 		{
 			this.aColor = aColor;
 			this.bColor = bColor;
-		}
-
-		public LinearGradientFragment()
-		{
-
 		}
 
 		private Rgb24 aColor;

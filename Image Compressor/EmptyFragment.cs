@@ -3,13 +3,8 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace Image_Compressor
 {
-	public sealed class EmptyFragment : Fragment
+	public struct EmptyFragment : Fragment
 	{
-		public EmptyFragment()
-		{
-
-		}
-
 		public byte Id => 0;
 
 		public static SingleColorFragment GenerateFragment(Image<Rgb24> image, Rectangle rectangle)
