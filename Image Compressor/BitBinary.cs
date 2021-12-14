@@ -115,9 +115,6 @@ namespace Image_Compressor
 
 		private void FillBitArray()
 		{
-			if (binaryReader.BaseStream.Position == binaryReader.BaseStream.Length)
-				return;
-
 			var @byte = new byte[] { binaryReader.ReadByte() };
 			bitArray = new(@byte);
 		}
