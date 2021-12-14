@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using SixLabors.ImageSharp.PixelFormats;
+using System.Collections;
 
 namespace Image_Compressor
 {
@@ -19,14 +20,16 @@ namespace Image_Compressor
 
 		private bool disposedValue;
 
+		public long ProcessedBits;
+
 		private void WriteBitArray()
 		{
 			byte[] @byte = new byte[1];
 			bitArray.CopyTo(@byte, 0);
 			binaryWriter.Write(@byte[0]);
 			bitIndex = 0;
+			bitArray.SetAll(false);
 		}
-
 
 		public void WriteBit(bool bit)
 		{
@@ -34,11 +37,17 @@ namespace Image_Compressor
 
 			bitIndex++;
 
-			//Console.Write(bit ? 1 : 0);
+#if Debug_Writing
+			Console.Write(bit ? 1 : 0);
+#endif
+
+			ProcessedBits++;
 
 			if (bitIndex > 7)
 			{
-				//Console.Write("|");
+#if Debug_Writing
+				Console.Write("|");
+#endif
 				WriteBitArray();
 			}
 		}
@@ -47,27 +56,24 @@ namespace Image_Compressor
 		{
 			for (int i = 0; i < sizeof(byte) * 8; i++)
 			{
-				bool bit = (@byte & (1 << i)) != 0;
+				bool bit = (@byte & (1 << 7 - i)) != 0;
 				WriteBit(bit);
 			}
+
+#if Debug_Writing_Deep
+			Console.Write("{b" + @byte + "}");
+#endif
 		}
 
-		public void WriteInt(int @int)
+		public void WriteColor(Rgb24 rgb24)
 		{
-			for (int i = 0; i < sizeof(int) * 8; i++)
-			{
-				bool bit = (@int & (1 << i)) != 0;
-				WriteBit(bit);
-			}
-		}
+			WriteByte(rgb24.R);
+			WriteByte(rgb24.G);
+			WriteByte(rgb24.B);
 
-		public void WriteUInt(uint @uint)
-		{
-			for (int i = 0; i < sizeof(uint) * 8; i++)
-			{
-				bool bit = (@uint & (1 << i)) != 0;
-				WriteBit(bit);
-			}
+#if Debug_Writing_Deep
+			Console.Write("{c" + @rgb24.R + "_" + @rgb24.G + "_" + @rgb24.B + "_" + "}");
+#endif
 		}
 
 		protected virtual void Dispose(bool disposing)
@@ -77,6 +83,7 @@ namespace Image_Compressor
 				if (disposing)
 				{
 					WriteBitArray();
+					binaryWriter.Flush();
 				}
 
 				disposedValue = true;
@@ -105,8 +112,13 @@ namespace Image_Compressor
 
 		private byte bitIndex;
 
+		public long ProcessedBits;
+
 		private void FillBitArray()
 		{
+			if (binaryReader.BaseStream.Position == binaryReader.BaseStream.Length)
+				return;
+
 			var @byte = new byte[] { binaryReader.ReadByte() };
 			bitArray = new(@byte);
 		}
@@ -115,13 +127,20 @@ namespace Image_Compressor
 		{
 			bool bit = bitArray[7 - bitIndex];
 
-			//Console.Write(bit ? 1 : 0);
+#if Debug_Reading
+			Console.Write(bit ? 1 : 0);
+#endif
 
 			bitIndex++;
 
+			ProcessedBits++;
+
 			if (bitIndex > 7)
 			{
-				//Console.Write("|");
+#if Debug_Reading
+				Console.Write("|");
+#endif
+
 				FillBitArray();
 				bitIndex = 0;
 			}
@@ -129,7 +148,7 @@ namespace Image_Compressor
 			return bit;
 		}
 
-		public byte ReadByte()
+		public byte ReadByte(/*byte readLimit (for custom data sizes!)*/)
 		{
 			BitArray byteBits = new(sizeof(byte) * 8);
 
@@ -141,15 +160,20 @@ namespace Image_Compressor
 
 			byte[] @byte = new byte[1];
 			byteBits.CopyTo(@byte, 0);
-			//Console.Write("{b" + @byte[0] + "}");
+
+#if Debug_Reading_Deep
+			Console.Write("{b" + @byte[0] + "}");
+#endif
 			return @byte[0];
 		}
 
 		public int ReadInt()
 		{
 			int @int = BitConverter.ToInt32(new byte[] { ReadByte(), ReadByte(), ReadByte(), ReadByte() });
-			
-			//Console.Write("{i" + @int + "}");
+
+#if Debug_Reading_Deep
+			Console.Write("{i" + @int + "}");
+#endif
 
 			return @int;
 		}
@@ -158,9 +182,25 @@ namespace Image_Compressor
 		{
 			uint @uint = BitConverter.ToUInt32(new byte[] { ReadByte(), ReadByte(), ReadByte(), ReadByte() });
 
-			//Console.Write("{u" + @uint + "}");
+#if Debug_Reading_Deep
+			Console.Write("{u" + @uint + "}");
+#endif
 
 			return @uint;
+		}
+
+		public Rgb24 ReadColor()
+		{
+			Rgb24 color;
+			color.R = ReadByte();
+			color.G = ReadByte();
+			color.B = ReadByte();
+
+#if Debug_Reading_Deep
+			Console.Write("{c" + color.R + "_" + color.G + "_" + color.B + "_" + "}");
+#endif
+
+			return color;
 		}
 	}
 }

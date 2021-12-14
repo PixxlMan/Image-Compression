@@ -22,12 +22,12 @@ namespace Image_Compressor
 			
 		}
 
-		void Fragment.WriteSpecificFragmentData(BinaryWriter binaryWriter)
+		void Fragment.WriteSpecificFragmentData(BitBinaryWriter binaryWriter)
 		{
 
 		}
 
-		public Fragment ReadSpecificFragmentData(BinaryReader binaryReader)
+		public Fragment ReadSpecificFragmentData(BitBinaryReader binaryReader)
 		{
 			return this;
 		}

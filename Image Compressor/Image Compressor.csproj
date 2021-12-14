@@ -9,6 +9,16 @@
 	<!--<EnablePreviewFeatures>True</EnablePreviewFeatures>-->
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>$(DefineConstants)TRACE</DefineConstants>
+	<!--<DefineConstants>$(DefineConstants)TRACE;Debug_Reading;Debug_Writing;Debug_Writing_Deep;Debug_Reading_Deep</DefineConstants>-->
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>$(DefineConstants)TRACE</DefineConstants>
+    <!--<DefineConstants>$(DefineConstants)TRACE;Debug_Reading;Debug_Writing;Debug_Writing_Deep;Debug_Reading_Deep</DefineConstants>-->
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
     <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta13" />

@@ -19,14 +19,7 @@ namespace Image_Compressor
 			return rD + gD + bD;
 		}
 
-		public static void Write(this BinaryWriter binaryWriter, Rgb24 rgb24)
-		{
-			binaryWriter.Write(rgb24.R);
-			binaryWriter.Write(rgb24.G);
-			binaryWriter.Write(rgb24.B);
-		}
-
-		public static Rgb24 ReadColor(this BinaryReader binaryReader)
+		public static Rgb24 ReadColor(this BitBinaryReader binaryReader)
 		{
 			return new Rgb24(binaryReader.ReadByte(), binaryReader.ReadByte(), binaryReader.ReadByte());
 		}

@@ -17,19 +17,23 @@ namespace Image_Compressor
 
 		public void DrawRepresentation(Image<Rgb24> image, Rectangle rectangle);
 
-		protected void WriteSpecificFragmentData(BinaryWriter binaryWriter);
+		protected void WriteSpecificFragmentData(BitBinaryWriter binaryWriter);
 
-		protected Fragment ReadSpecificFragmentData(BinaryReader binaryReader);
+		protected Fragment ReadSpecificFragmentData(BitBinaryReader binaryReader);
 
-		public static void WriteFragmentData(Fragment fragment, BinaryWriter binaryWriter)
+		public static void WriteFragmentData(Fragment fragment, BitBinaryWriter binaryWriter)
 		{
-			binaryWriter.Write(fragment.Id);
+			binaryWriter.WriteByte(fragment.Id);
 			fragment.WriteSpecificFragmentData(binaryWriter);
 		}
 
-		public static Fragment ReadFragmentData(BinaryReader binaryReader)
+		public static Fragment ReadFragmentData(BitBinaryReader binaryReader)
 		{
 			byte id = binaryReader.ReadByte();
+
+#if Debug_Reading_Deep
+			Console.Write($"-ReadFragmentData{{{id}}}");
+#endif
 
 			return id switch
 			{

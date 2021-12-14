@@ -43,12 +43,12 @@ namespace Image_Compressor
 			image.Mutate(i => i.Fill(new SolidBrush(color), new RectangularPolygon(rectangle)));
 		}
 
-		public void WriteSpecificFragmentData(BinaryWriter binaryWriter)
+		public void WriteSpecificFragmentData(BitBinaryWriter binaryWriter)
 		{
-			binaryWriter.Write(color);
+			binaryWriter.WriteColor(color);
 		}
 
-		public Fragment ReadSpecificFragmentData(BinaryReader binaryReader)
+		public Fragment ReadSpecificFragmentData(BitBinaryReader binaryReader)
 		{
 			color = binaryReader.ReadColor();
 

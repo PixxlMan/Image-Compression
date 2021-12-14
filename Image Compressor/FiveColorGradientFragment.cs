@@ -49,16 +49,16 @@ namespace Image_Compressor
 			return fragment;
 		}
 
-		public void WriteSpecificFragmentData(BinaryWriter binaryWriter)
+		public void WriteSpecificFragmentData(BitBinaryWriter binaryWriter)
 		{
-			binaryWriter.Write(aColor);
-			binaryWriter.Write(bColor);
-			binaryWriter.Write(cColor);
-			binaryWriter.Write(dColor);
-			binaryWriter.Write(centerColor);
+			binaryWriter.WriteColor(aColor);
+			binaryWriter.WriteColor(bColor);
+			binaryWriter.WriteColor(cColor);
+			binaryWriter.WriteColor(dColor);
+			binaryWriter.WriteColor(centerColor);
 		}
 
-		public Fragment ReadSpecificFragmentData(BinaryReader binaryReader)
+		public Fragment ReadSpecificFragmentData(BitBinaryReader binaryReader)
 		{
 			aColor = binaryReader.ReadColor();
 			bColor = binaryReader.ReadColor();
