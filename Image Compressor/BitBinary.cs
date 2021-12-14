@@ -34,11 +34,11 @@ namespace Image_Compressor
 
 			bitIndex++;
 
-			Console.Write(bit ? 1 : 0);
+			//Console.Write(bit ? 1 : 0);
 
 			if (bitIndex > 7)
 			{
-				Console.Write("|");
+				//Console.Write("|");
 				WriteBitArray();
 			}
 		}
@@ -115,13 +115,13 @@ namespace Image_Compressor
 		{
 			bool bit = bitArray[7 - bitIndex];
 
-			Console.Write(bit ? 1 : 0);
+			//Console.Write(bit ? 1 : 0);
 
 			bitIndex++;
 
 			if (bitIndex > 7)
 			{
-				Console.Write("|");
+				//Console.Write("|");
 				FillBitArray();
 				bitIndex = 0;
 			}
