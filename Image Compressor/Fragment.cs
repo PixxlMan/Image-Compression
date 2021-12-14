@@ -33,6 +33,7 @@ namespace Image_Compressor
 
 			return id switch
 			{
+				0 => new EmptyFragment(),
 				10 => new SingleColorFragment().ReadSpecificFragmentData(binaryReader),
 				20 => new LinearGradientFragment().ReadSpecificFragmentData(binaryReader),
 				30 => new FiveColorGradientFragment().ReadSpecificFragmentData(binaryReader),
