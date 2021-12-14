@@ -42,14 +42,14 @@ namespace Image_Compressor
 			image.Mutate(i => i.Fill(pathGradientBrush));
 		}
 
-		static Fragment Fragment.GenerateSpecificFragment(Image<Rgb24> image, Rectangle rectangle)
+		public static Fragment GenerateFragment(Image<Rgb24> image, Rectangle rectangle)
 		{
 			FiveColorGradientFragment fragment = new(image[rectangle.Left, rectangle.Top], image[rectangle.Right - 1, rectangle.Top], image[rectangle.Left, rectangle.Bottom - 1], image[rectangle.Right - 1, rectangle.Bottom - 1], image[rectangle.X + (rectangle.Width / 2), rectangle.Y + (rectangle.Height / 2)]);
 
 			return fragment;
 		}
 
-		void Fragment.WriteSpecificFragmentData(BinaryWriter binaryWriter)
+		public void WriteSpecificFragmentData(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write(aColor);
 			binaryWriter.Write(bColor);
@@ -58,15 +58,15 @@ namespace Image_Compressor
 			binaryWriter.Write(centerColor);
 		}
 
-		static Fragment Fragment.ReadSpecificFragmentData(BinaryReader binaryReader)
+		public Fragment ReadSpecificFragmentData(BinaryReader binaryReader)
 		{
-			var aColor = binaryReader.ReadColor();
-			var bColor = binaryReader.ReadColor();
-			var cColor = binaryReader.ReadColor();
-			var dColor = binaryReader.ReadColor();
-			var centerColor = binaryReader.ReadColor();
+			aColor = binaryReader.ReadColor();
+			bColor = binaryReader.ReadColor();
+			cColor = binaryReader.ReadColor();
+			dColor = binaryReader.ReadColor();
+			centerColor = binaryReader.ReadColor();
 
-			return new FiveColorGradientFragment(aColor, bColor, cColor, dColor, centerColor);
+			return this;
 		}
 	}
 }

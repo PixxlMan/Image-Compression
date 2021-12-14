@@ -36,25 +36,25 @@ namespace Image_Compressor
 			image.Mutate(i => i.Fill(gradientBrush, new RectangularPolygon(rectangle)));
 		}
 
-		static Fragment Fragment.GenerateSpecificFragment(Image<Rgb24> image, Rectangle rectangle)
+		public static Fragment GenerateFragment(Image<Rgb24> image, Rectangle rectangle)
 		{
 			LinearGradientFragment fragment = new(image[rectangle.Left, rectangle.Top], image[rectangle.Right - 1, rectangle.Bottom - 1]);
 
 			return fragment;
 		}
 
-		void Fragment.WriteSpecificFragmentData(BinaryWriter binaryWriter)
+		public void WriteSpecificFragmentData(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write(aColor);
 			binaryWriter.Write(bColor);
 		}
 
-		static Fragment Fragment.ReadSpecificFragmentData(BinaryReader binaryReader)
+		public Fragment ReadSpecificFragmentData(BinaryReader binaryReader)
 		{
-			var aColor = binaryReader.ReadColor();
-			var bColor = binaryReader.ReadColor();
+			aColor = binaryReader.ReadColor();
+			bColor = binaryReader.ReadColor();
 
-			return new LinearGradientFragment(aColor, bColor);
+			return this;
 		}
 	}
 }

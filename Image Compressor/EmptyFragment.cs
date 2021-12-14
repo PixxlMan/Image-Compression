@@ -27,9 +27,9 @@ namespace Image_Compressor
 
 		}
 
-		static abstract Fragment Fragment.ReadSpecificFragmentData(BinaryReader binaryReader)
+		public Fragment ReadSpecificFragmentData(BinaryReader binaryReader)
 		{
-			return new EmptyFragment();
+			return this;
 		}
 	}
 }

@@ -13,14 +13,13 @@ namespace Image_Compressor
 {
 	public interface Fragment
 	{
-		public static abstract byte StaticId { get; }
-		public byte Id => StaticId;
+		public byte Id { get; }
 
 		public void DrawRepresentation(Image<Rgb24> image, Rectangle rectangle);
 
-		public void WriteSpecificFragmentData(BinaryWriter binaryWriter);
+		protected void WriteSpecificFragmentData(BinaryWriter binaryWriter);
 
-		public static abstract Fragment ReadSpecificFragmentData(BinaryReader binaryReader);
+		protected Fragment ReadSpecificFragmentData(BinaryReader binaryReader);
 
 		public static void WriteFragmentData(Fragment fragment, BinaryWriter binaryWriter)
 		{
@@ -34,13 +33,11 @@ namespace Image_Compressor
 
 			return id switch
 			{
-				10 => SingleColorFragment.ReadSpecificFragmentData(binaryReader),
-				20 => LinearGradientFragment.ReadSpecificFragmentData(binaryReader),
-				30 => FiveColorGradientFragment.ReadSpecificFragmentData(binaryReader),
+				10 => new SingleColorFragment().ReadSpecificFragmentData(binaryReader),
+				20 => new LinearGradientFragment().ReadSpecificFragmentData(binaryReader),
+				30 => new FiveColorGradientFragment().ReadSpecificFragmentData(binaryReader),
 			};
 		}
-
-		public static abstract Fragment GenerateSpecificFragment(Image<Rgb24> image, Rectangle rectangle);
 
 		public static Fragment GenerateFragment(Image<Rgb24> image, Rectangle rectangle)
 		{

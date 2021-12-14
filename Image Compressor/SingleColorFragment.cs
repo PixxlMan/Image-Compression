@@ -27,7 +27,7 @@ namespace Image_Compressor
 
 		public byte Id => 10;
 
-		public static Fragment GenerateSpecificFragment(Image<Rgb24> image, Rectangle rectangle)
+		public static Fragment GenerateFragment(Image<Rgb24> image, Rectangle rectangle)
 		{
 			Rgb24 avgColor = ColorUtils.AverageColor(image.GetFivePointSamples(rectangle));
 
@@ -43,16 +43,16 @@ namespace Image_Compressor
 			image.Mutate(i => i.Fill(new SolidBrush(color), new RectangularPolygon(rectangle)));
 		}
 
-		void Fragment.WriteSpecificFragmentData(BinaryWriter binaryWriter)
+		public void WriteSpecificFragmentData(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write(color);
 		}
 
-		static Fragment Fragment.ReadSpecificFragmentData(BinaryReader binaryReader)
+		public Fragment ReadSpecificFragmentData(BinaryReader binaryReader)
 		{
-			var color = binaryReader.ReadColor();
+			color = binaryReader.ReadColor();
 
-			return new SingleColorFragment(color);
+			return this;
 		}
 	}
 }
