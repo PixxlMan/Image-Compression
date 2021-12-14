@@ -23,8 +23,8 @@ namespace Image_Compressor
 		{
 			byte[] @byte = new byte[1];
 			bitArray.CopyTo(@byte, 0);
+			binaryWriter.Write(@byte[0]);
 			bitIndex = 0;
-			binaryWriter.Write(@byte);
 		}
 
 
@@ -34,8 +34,11 @@ namespace Image_Compressor
 
 			bitIndex++;
 
+			Console.Write(bit ? 1 : 0);
+
 			if (bitIndex > 7)
 			{
+				Console.Write("|");
 				WriteBitArray();
 			}
 		}
@@ -112,10 +115,13 @@ namespace Image_Compressor
 		{
 			bool bit = bitArray[7 - bitIndex];
 
+			Console.Write(bit ? 1 : 0);
+
 			bitIndex++;
 
 			if (bitIndex > 7)
 			{
+				Console.Write("|");
 				FillBitArray();
 				bitIndex = 0;
 			}
@@ -132,14 +138,18 @@ namespace Image_Compressor
 				byteBits[(sizeof(byte) * 8) - i - 1] = ReadBit();
 			}
 
+
 			byte[] @byte = new byte[1];
 			byteBits.CopyTo(@byte, 0);
+			//Console.Write("{b" + @byte[0] + "}");
 			return @byte[0];
 		}
 
 		public int ReadInt()
 		{
 			int @int = BitConverter.ToInt32(new byte[] { ReadByte(), ReadByte(), ReadByte(), ReadByte() });
+			
+			//Console.Write("{i" + @int + "}");
 
 			return @int;
 		}
@@ -147,6 +157,8 @@ namespace Image_Compressor
 		public uint ReadUInt()
 		{
 			uint @uint = BitConverter.ToUInt32(new byte[] { ReadByte(), ReadByte(), ReadByte(), ReadByte() });
+
+			//Console.Write("{u" + @uint + "}");
 
 			return @uint;
 		}
