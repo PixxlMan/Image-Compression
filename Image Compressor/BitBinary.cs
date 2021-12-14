@@ -30,7 +30,7 @@ namespace Image_Compressor
 
 		public void WriteBit(bool bit)
 		{
-			bitArray.Set(bitIndex, bit);
+			bitArray.Set(7 - bitIndex, bit);
 
 			bitIndex++;
 
