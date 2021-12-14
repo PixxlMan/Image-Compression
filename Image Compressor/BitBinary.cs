@@ -83,7 +83,6 @@ namespace Image_Compressor
 				if (disposing)
 				{
 					WriteBitArray();
-					binaryWriter.Flush();
 				}
 
 				disposedValue = true;
