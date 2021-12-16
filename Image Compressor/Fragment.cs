@@ -15,6 +15,13 @@ namespace Image_Compressor
 	{
 		public byte Id { get; }
 
+		public static void BlurTopAndLeftEdge(Image<Rgb24> image, Rectangle rectangle)
+		{
+			image.Mutate(i => i.BoxBlur(3, new Rectangle(rectangle.X, Math.Max(rectangle.Y - ((rectangle.Height / 6) / 2), 0), rectangle.Width, Math.Max(rectangle.Height / 6, 1))));
+
+			image.Mutate(i => i.BoxBlur(3, new Rectangle(Math.Max(rectangle.X - ((rectangle.Width / 6) / 2), 0), rectangle.Y, Math.Max(rectangle.Width / 6, 1), rectangle.Height)));
+		}
+
 		public void DrawRepresentation(Image<Rgb24> image, Rectangle rectangle);
 
 		protected void WriteSpecificFragmentData(BitBinaryWriter binaryWriter);

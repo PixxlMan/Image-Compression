@@ -35,6 +35,9 @@ namespace Image_Compressor
 			PathGradientBrush pathGradientBrush = new PathGradientBrush(new RectangularPolygon(rectangle).Points.ToArray(), new Color[] { aColor, bColor, dColor, cColor }, centerColor);
 
 			image.Mutate(i => i.Fill(pathGradientBrush));
+
+			if (rectangle.Width > 4)
+				Fragment.BlurTopAndLeftEdge(image, rectangle);
 		}
 
 		public static Fragment GenerateFragment(Image<Rgb24> image, Rectangle rectangle)

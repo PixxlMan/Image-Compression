@@ -29,6 +29,9 @@ namespace Image_Compressor
 			LinearGradientBrush gradientBrush = new(new PointF(rectangle.Left, rectangle.Top), new PointF(rectangle.Right, rectangle.Bottom), GradientRepetitionMode.DontFill, new ColorStop(0f, new Color(aColor)), new ColorStop(1f, new Color(bColor)));
 
 			image.Mutate(i => i.Fill(gradientBrush, new RectangularPolygon(rectangle)));
+
+			if (rectangle.Width > 4)
+				Fragment.BlurTopAndLeftEdge(image, rectangle);
 		}
 
 		public static Fragment GenerateFragment(Image<Rgb24> image, Rectangle rectangle)

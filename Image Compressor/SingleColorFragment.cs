@@ -38,6 +38,9 @@ namespace Image_Compressor
 			var @this = this;
 
 			image.Mutate(i => i.Fill(new SolidBrush(@this.color), new RectangularPolygon(rectangle)));
+
+			if (rectangle.Width > 4)
+				Fragment.BlurTopAndLeftEdge(image, rectangle);
 		}
 
 		public void WriteSpecificFragmentData(BitBinaryWriter binaryWriter)
