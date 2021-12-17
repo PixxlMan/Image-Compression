@@ -219,9 +219,9 @@ public static class ImageCompressor
 	}
 
 	// (Modified and translated to C#) From: https://github.com/Jeanvit/CakeImageAnalyzer/blob/master/src/cake/classes/ImageUtils.java
-	public static int[] GenerateHistogram(Image<Rgb24> image, Rectangle rectangle, int numberOfBins)
+	public static byte[] GenerateHistogram(Image<Rgb24> image, Rectangle rectangle, int numberOfBins)
 	{
-		int[] bins = new int[numberOfBins];
+		byte[] bins = new byte[numberOfBins];
 		int intensity;
 		for (int i = rectangle.Left; i <= rectangle.Right - 1; i++)
 		{
@@ -235,17 +235,17 @@ public static class ImageCompressor
 	}
 
 	// (Modified and translated to C#) From: https://github.com/Jeanvit/CakeImageAnalyzer/blob/master/src/cake/classes/ImageUtils.java
-	public static double GetEntropy(Image<Rgb24> image, Rectangle rectangle, int maxValue)
+	public static float GetEntropy(Image<Rgb24> image, Rectangle rectangle, int maxValue)
 	{
-		int[] bins = GenerateHistogram(image, rectangle, maxValue);
-		double entropyValue = 0, temp;
-		double totalSize = rectangle.Height * rectangle.Width; //total size of all symbols in an image
+		byte[] bins = GenerateHistogram(image, rectangle, maxValue);
+		float entropyValue = 0, temp;
+		float totalSize = rectangle.Height * rectangle.Width; //total size of all symbols in an image
 
 		for (int i = 0; i < maxValue; i++)
 		{ //the number of times a sybmol has occured
 			if (bins[i] > 0)
 			{ //log of zero goes to infinity
-				temp = (bins[i] / totalSize) * (Math.Log(totalSize / bins[i]));
+				temp = (float)((bins[i] / totalSize) * (Math.Log(totalSize / bins[i])));
 				entropyValue += temp;
 			}
 		}
