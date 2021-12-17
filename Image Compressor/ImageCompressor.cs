@@ -25,7 +25,7 @@ public static class ImageCompressor
 			}
 			else
 			{
-				limit = i;
+				limit = i + 1;
 
 				Console.WriteLine($"actual limit used: {limit}");
 
