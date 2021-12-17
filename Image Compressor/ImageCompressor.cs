@@ -228,6 +228,11 @@ public static class ImageCompressor
 			for (int j = rectangle.Top; j <= rectangle.Bottom - 1; j++)
 			{
 				intensity = (image[i, j].R / 3) + (image[i, j].G / 3) + (image[i, j].B / 3);
+
+				// Crush away color data, to attempt to allow the alghoritm to only focus on significant color differences.
+				intensity /= 4;
+				intensity *= 4;
+
 				bins[intensity]++;
 			}
 		}
