@@ -169,17 +169,6 @@ public static class ImageCompressor
 		c = new Rectangle(new Point(rectangle.Left, rectangle.Top + rectangle.Height / 2), size);
 		d = new Rectangle(new Point(rectangle.Left + rectangle.Width / 2, rectangle.Top + rectangle.Height / 2), size);
 	}
-	
-	public static void GetRectangleQuadrantsForWholeImage(Rectangle rectangle, out Rectangle a, out Rectangle b, out Rectangle c, out Rectangle d)
-	{
-		a = new Rectangle(0, 0, rectangle.Width / 2, rectangle.Height / 2);
-
-		b = new Rectangle(rectangle.Width / 2, 0, rectangle.Width / 2, rectangle.Height / 2);
-
-		c = new Rectangle(0, rectangle.Height / 2, rectangle.Width / 2, rectangle.Height / 2);
-
-		d = new Rectangle(rectangle.Width / 2, rectangle.Height / 2, rectangle.Width / 2, rectangle.Height / 2);
-	}
 
 	private static void RecursivelyGenerateFragmentTree(QuadTreeCell<Fragment> fragmentCell, Image<Rgb24> image, Func<Image<Rgb24>, Rectangle, bool> quadrantizePredicate, Rectangle imageBounds, Rectangle rectangle, int limit, int minLimit, int level = 0)
 	{
