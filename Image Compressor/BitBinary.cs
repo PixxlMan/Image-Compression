@@ -65,6 +65,19 @@ namespace Image_Compressor
 #endif
 		}
 
+		public void WriteByte(byte @byte, byte bitsLimit, byte skipOffset = 0)
+		{
+			for (int i = skipOffset; i < (sizeof(byte) * 8) - ((sizeof(byte) * 8) - bitsLimit); i++)
+			{
+				bool bit = (@byte & (1 << 7 - i)) != 0;
+				WriteBit(bit);
+			}
+
+#if Debug_Writing_Deep
+			Console.Write("{b" + @byte + " l=" + bitsLimit + " s=" + skipOffset + "}");
+#endif
+		}
+
 		public void WriteColor(Rgb24 rgb24)
 		{
 			WriteByte(rgb24.R);
@@ -144,7 +157,7 @@ namespace Image_Compressor
 			return bit;
 		}
 
-		public byte ReadByte(/*byte readLimit (for custom data sizes!)*/)
+		public byte ReadByte()
 		{
 			BitArray byteBits = new(sizeof(byte) * 8);
 
@@ -159,6 +172,25 @@ namespace Image_Compressor
 
 #if Debug_Reading_Deep
 			Console.Write("{b" + @byte[0] + "}");
+#endif
+			return @byte[0];
+		}
+		
+		public byte ReadByte(byte bitsReadLimit)
+		{
+			BitArray byteBits = new(sizeof(byte) * 8);
+
+			for (int i = 0; i < byteBits.Length - ((sizeof(byte) * 8) - bitsReadLimit); i++)
+			{
+				byteBits[(sizeof(byte) * 8) - i - 1] = ReadBit();
+			}
+
+
+			byte[] @byte = new byte[1];
+			byteBits.CopyTo(@byte, 0);
+
+#if Debug_Reading_Deep
+			Console.Write("{b" + @byte[0] + " l=" + bitsReadLimit + "}");
 #endif
 			return @byte[0];
 		}
