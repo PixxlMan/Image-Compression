@@ -176,11 +176,11 @@ namespace Image_Compressor
 			return @byte[0];
 		}
 		
-		public byte ReadByte(byte bitsReadLimit)
+		public byte ReadByte(byte bitsReadLimit, byte skipBits = 0)
 		{
 			BitArray byteBits = new(sizeof(byte) * 8);
 
-			for (int i = 0; i < byteBits.Length - ((sizeof(byte) * 8) - bitsReadLimit); i++)
+			for (int i = skipBits; i < byteBits.Length - ((sizeof(byte) * 8) - bitsReadLimit); i++)
 			{
 				byteBits[(sizeof(byte) * 8) - i - 1] = ReadBit();
 			}
@@ -190,7 +190,7 @@ namespace Image_Compressor
 			byteBits.CopyTo(@byte, 0);
 
 #if Debug_Reading_Deep
-			Console.Write("{b" + @byte[0] + " l=" + bitsReadLimit + "}");
+			Console.Write("{b" + @byte[0] + " l=" + bitsReadLimit + " s=" + skipBits + "}");
 #endif
 			return @byte[0];
 		}
