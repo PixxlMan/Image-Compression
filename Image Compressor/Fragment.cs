@@ -30,13 +30,13 @@ namespace Image_Compressor
 
 		public static void WriteFragmentData(Fragment fragment, BitBinaryWriter binaryWriter)
 		{
-			binaryWriter.WriteByte(fragment.Id);
+			binaryWriter.WriteByte(fragment.Id, 8, 6);
 			fragment.WriteSpecificFragmentData(binaryWriter);
 		}
 
 		public static Fragment ReadFragmentData(BitBinaryReader binaryReader)
 		{
-			byte id = binaryReader.ReadByte();
+			byte id = binaryReader.ReadByte(8, 6);
 
 #if Debug_Reading_Deep
 			Console.Write($"-ReadFragmentData{{{id}}}");
@@ -44,10 +44,10 @@ namespace Image_Compressor
 
 			return id switch
 			{
-				0 => new EmptyFragment(),
-				10 => new SingleColorFragment().ReadSpecificFragmentData(binaryReader),
-				20 => new LinearGradientFragment().ReadSpecificFragmentData(binaryReader),
-				30 => new FiveColorGradientFragment().ReadSpecificFragmentData(binaryReader),
+				EmptyFragment.ConstId => new EmptyFragment(),
+				SingleColorFragment.ConstId => new SingleColorFragment().ReadSpecificFragmentData(binaryReader),
+				LinearGradientFragment.ConstId => new LinearGradientFragment().ReadSpecificFragmentData(binaryReader),
+				FiveColorGradientFragment.ConstId => new FiveColorGradientFragment().ReadSpecificFragmentData(binaryReader),
 			};
 		}
 

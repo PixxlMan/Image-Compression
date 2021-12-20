@@ -28,7 +28,9 @@ namespace Image_Compressor
 		private Rgb24 dColor;
 		private Rgb24 centerColor;
 
-		public byte Id => 30;
+		public byte Id => ConstId;
+
+		public const byte ConstId = 0b_10;
 
 		public void DrawRepresentation(Image<Rgb24> image, Rectangle rectangle)
 		{
