@@ -5,6 +5,10 @@ namespace Image_Compressor
 {
 	public class BitBinaryWriter : IDisposable
 	{
+		private const byte bitDepthRed = 8;
+		private const byte bitDepthGreen = 8;
+		private const byte bitDepthBlue = 8;
+
 		public BitBinaryWriter(BinaryWriter binaryWriter)
 		{
 			this.binaryWriter = binaryWriter;
@@ -80,9 +84,9 @@ namespace Image_Compressor
 
 		public void WriteColor(Rgb24 rgb24)
 		{
-			WriteByte(rgb24.R);
-			WriteByte(rgb24.G);
-			WriteByte(rgb24.B);
+			WriteByte(rgb24.R, bitDepthRed);
+			WriteByte(rgb24.G, bitDepthGreen);
+			WriteByte(rgb24.B, bitDepthBlue);
 
 #if Debug_Writing_Deep
 			Console.Write("{c" + @rgb24.R + "_" + @rgb24.G + "_" + @rgb24.B + "_" + "}");
@@ -111,6 +115,10 @@ namespace Image_Compressor
 
 	public class BitBinaryReader
 	{
+		private const byte bitDepthRed = 8;
+		private const byte bitDepthGreen = 8;
+		private const byte bitDepthBlue = 8;
+
 		public BitBinaryReader(BinaryReader binaryReader)
 		{
 			this.binaryReader = binaryReader;
@@ -220,9 +228,9 @@ namespace Image_Compressor
 		public Rgb24 ReadColor()
 		{
 			Rgb24 color;
-			color.R = ReadByte();
-			color.G = ReadByte();
-			color.B = ReadByte();
+			color.R = ReadByte(bitDepthRed);
+			color.G = ReadByte(bitDepthGreen);
+			color.B = ReadByte(bitDepthBlue);
 
 #if Debug_Reading_Deep
 			Console.Write("{c" + color.R + "_" + color.G + "_" + color.B + "_" + "}");
