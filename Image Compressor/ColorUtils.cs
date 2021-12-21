@@ -67,5 +67,82 @@ namespace Image_Compressor
 			bottomRightSample = image[rectangle.Right - 1, rectangle.Bottom - 1];
 			centerSample = image[rectangle.Left + (rectangle.Width / 2) - 1, rectangle.Top + (rectangle.Height / 2) - 1];
 		}
+
+		public static Rgb24 GetSample(this Image<Rgb24> image, Rectangle rectangle, SamplePoint samplePoint)
+		{
+			Rgb24 sample = image[(samplePoint & SamplePoint.YMask) switch
+			{
+				SamplePoint.Top => rectangle.Top,
+				SamplePoint.Bottom => rectangle.Bottom,
+			}, (samplePoint & SamplePoint.XMask) switch
+			{
+				SamplePoint.Right => rectangle.Right,
+				SamplePoint.Left => rectangle.Left,
+			}];
+
+			return sample;
+		}
+
+		[Flags]
+		public enum SamplePoint : byte
+		{
+			Top		= 0b_10000000,
+			Bottom	= 0b_01000000,
+			Left	= 0b_00100000,
+			Right	= 0b_00010000,
+			Center	= 0b_00001000,
+
+			XMask		= Top | Bottom,
+			YMask		= Left | Right,
+			CenterMask	= Center,
+
+			TopLeft			= Top | Left,
+			TopRight		= Top | Right,
+			TopCenter		= Top | Center,
+			RightCenter		= Right | Center,
+			BottomLeft		= Bottom | Left,
+			BottomRight		= Bottom | Right,
+			BottomCenter	= Bottom | Center,
+			LeftCenter		= Left | Center,
+
+			_BitSize = 5,
+			_BitSizeWithoutCenter = 4,
+		}
+
+		[Flags]
+		public enum SampleLine : byte
+		{
+			TopLeftToBottomRight	= SamplePoint.TopLeft | SamplePoint.BottomRight,
+			TopRightToBottomLeft	= SamplePoint.TopRight | SamplePoint.BottomLeft,
+			TopCenterToBottomCenter = SamplePoint.TopCenter | SamplePoint.BottomCenter,
+			RightCenterToLeftCenter = SamplePoint.RightCenter | SamplePoint.LeftCenter,
+
+			_BitSize = SamplePoint._BitSize,
+			_BitSizeWithoutCenter = SamplePoint._BitSizeWithoutCenter,
+		}
+
+		public static SampleLine GetOptimalLinearGradientLine(this Image<Rgb24> image, Rectangle rectangle)
+		{
+			GetFivePointSamples(image, rectangle, out Rgb24 topLeftSample, out Rgb24 topRightSample, out Rgb24 bottomLeftSample, out Rgb24 bottomRightSample, out Rgb24 centerSample);
+
+			SampleLine bestSampleLine;
+			int bestSampleLineDistance;
+
+			var averageColor = AverageColor(GetFivePointSamples(image, rectangle));
+
+
+			var topLeftToBottomRightLineDistance = AverageColor(topLeftSample, bottomRightSample).ColorDistance(averageColor);
+			bestSampleLine = SampleLine.TopLeftToBottomRight;
+			bestSampleLineDistance = topLeftToBottomRightLineDistance;
+
+			var topRightToBottomLeftLineDistance = AverageColor(topRightSample, bottomLeftSample).ColorDistance(averageColor);
+			if (topRightToBottomLeftLineDistance > bestSampleLineDistance)
+			{
+				bestSampleLine = SampleLine.TopRightToBottomLeft;
+				bestSampleLineDistance = topRightToBottomLeftLineDistance;
+			}
+
+			return bestSampleLine;
+		}
 	}
 }

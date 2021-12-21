@@ -38,6 +38,20 @@ namespace Image_Compressor
 
 		public static Fragment GenerateFragment(Image<Rgb24> image, Rectangle rectangle)
 		{
+			var line = image.GetOptimalLinearGradientLine(rectangle);
+
+			switch (line)
+			{
+				case ColorUtils.SampleLine.TopLeftToBottomRight:
+					break;
+				case ColorUtils.SampleLine.TopRightToBottomLeft:
+					break;
+				case ColorUtils.SampleLine.TopCenterToBottomCenter:
+					break;
+				case ColorUtils.SampleLine.RightCenterToLeftCenter:
+					break;
+			}
+
 			LinearGradientFragment fragment = new(image[rectangle.Left, rectangle.Top], image[rectangle.Right - 1, rectangle.Bottom - 1]);
 
 			return fragment;
