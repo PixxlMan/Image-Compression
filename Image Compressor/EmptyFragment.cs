@@ -5,9 +5,9 @@ namespace Image_Compressor
 {
 	public struct EmptyFragment : Fragment
 	{
-		public byte Id => ConstId;
+		public FragmentId Id => ConstId;
 
-		public const byte ConstId = 0b_00;
+		public const FragmentId ConstId = FragmentId.EmptyFragment;
 
 		public static SingleColorFragment GenerateFragment(Image<Rgb24> image, Rectangle rectangle)
 		{

@@ -22,9 +22,9 @@ namespace Image_Compressor
 		private Rgb24 aColor;
 		private Rgb24 bColor;
 
-		public byte Id => ConstId;
+		public FragmentId Id => ConstId;
 
-		public const byte ConstId = 0b_11;
+		public const FragmentId ConstId = FragmentId.LinearGradientFragment;
 
 		public void DrawRepresentation(Image<Rgb24> image, Rectangle rectangle)
 		{

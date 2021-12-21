@@ -11,9 +11,19 @@ using SixLabors.ImageSharp.Drawing.Processing;
 
 namespace Image_Compressor
 {
+	public enum FragmentId : byte
+	{
+		EmptyFragment,
+		SingleColorFragment,
+		LinearGradientFragment,
+		FiveColorGradientFragment,
+
+		_BitSize = 2,
+	}
+
 	public interface Fragment
 	{
-		public byte Id { get; }
+		public FragmentId Id { get; }
 
 		public static void BlurTopAndLeftEdge(Image<Rgb24> image, Rectangle rectangle)
 		{
@@ -30,13 +40,13 @@ namespace Image_Compressor
 
 		public static void WriteFragmentData(Fragment fragment, BitBinaryWriter binaryWriter)
 		{
-			binaryWriter.WriteByte(fragment.Id, 8, 6);
+			binaryWriter.WriteByte((byte)fragment.Id, 8, (byte)(8 - FragmentId._BitSize));
 			fragment.WriteSpecificFragmentData(binaryWriter);
 		}
 
 		public static Fragment ReadFragmentData(BitBinaryReader binaryReader)
 		{
-			byte id = binaryReader.ReadByte(8, 6);
+			FragmentId id = (FragmentId)binaryReader.ReadByte(8, 6);
 
 #if Debug_Reading_Deep
 			Console.Write($"-ReadFragmentData{{{id}}}");

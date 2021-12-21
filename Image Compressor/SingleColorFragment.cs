@@ -20,9 +20,9 @@ namespace Image_Compressor
 
 		private Rgb24 color;
 
-		public byte Id => ConstId;
+		public FragmentId Id => ConstId;
 
-		public const byte ConstId = 0b_01;
+		public const FragmentId ConstId = FragmentId.SingleColorFragment;
 
 		public static Fragment GenerateFragment(Image<Rgb24> image, Rectangle rectangle)
 		{
