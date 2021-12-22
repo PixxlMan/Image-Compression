@@ -90,35 +90,31 @@ namespace Image_Compressor
 			Bottom	= 0b_01000000,
 			Left	= 0b_00100000,
 			Right	= 0b_00010000,
-			Center	= 0b_00001000,
 
 			XMask		= Top | Bottom,
 			YMask		= Left | Right,
-			CenterMask	= Center,
 
 			TopLeft			= Top | Left,
 			TopRight		= Top | Right,
-			TopCenter		= Top | Center,
-			RightCenter		= Right | Center,
+			TopCenter		= Top | Right | Left,
+			RightCenter		= Right | Top | Bottom,
 			BottomLeft		= Bottom | Left,
 			BottomRight		= Bottom | Right,
-			BottomCenter	= Bottom | Center,
-			LeftCenter		= Left | Center,
+			BottomCenter	= Bottom | Right | Left,
+			LeftCenter		= Left | Top | Bottom,
 
-			_BitSize = 5,
-			_BitSizeWithoutCenter = 4,
+			_BitSize = 4,
 		}
 
 		[Flags]
 		public enum SampleLine : byte
 		{
-			TopLeftToBottomRight	= SamplePoint.TopLeft | SamplePoint.BottomRight,
-			TopRightToBottomLeft	= SamplePoint.TopRight | SamplePoint.BottomLeft,
-			TopCenterToBottomCenter = SamplePoint.TopCenter | SamplePoint.BottomCenter,
-			RightCenterToLeftCenter = SamplePoint.RightCenter | SamplePoint.LeftCenter,
+			TopLeftToBottomRight	= SamplePoint.TopLeft | (SamplePoint.BottomRight >> 4),
+			TopRightToBottomLeft	= SamplePoint.TopRight | (SamplePoint.BottomLeft >> 4),
+			TopCenterToBottomCenter = SamplePoint.TopCenter | (SamplePoint.BottomCenter >> 4),
+			RightCenterToLeftCenter = SamplePoint.RightCenter | (SamplePoint.LeftCenter >> 4),
 
-			_BitSize = SamplePoint._BitSize,
-			_BitSizeWithoutCenter = SamplePoint._BitSizeWithoutCenter,
+			_BitSize = SamplePoint._BitSize / 2,
 		}
 
 		public static SampleLine GetOptimalLinearGradientLine(this Image<Rgb24> image, Rectangle rectangle)
