@@ -1,13 +1,15 @@
 ﻿namespace Quad_Tree
 {
-	public class QuadTreeCell<TLeafData>
+	public class QuadTreeCell<TLeafData, TData>
 	{
 		public QuadTreeCell(TLeafData leafData)
 		{
 			LeafData = leafData;
 		}
 
-		public QuadTreeCell<TLeafData>? A, B, C, D;
+		public TData Data;
+
+		public QuadTreeCell<TLeafData, TData>? A, B, C, D;
 
 		public TLeafData? LeafData;
 

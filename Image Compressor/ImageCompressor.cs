@@ -10,7 +10,7 @@ namespace Image_Compressor;
 
 public static class ImageCompressor
 {
-	public static QuadTree<Fragment> Compress(Image<Rgb24> image, float complexityThreshold, int maxLimit, int minLimit)
+	public static QuadTree<Fragment, QuadrantData> Compress(Image<Rgb24> image, float complexityThreshold, int maxLimit, int minLimit)
 	{
 		int limit = maxLimit;
 
@@ -37,13 +37,11 @@ public static class ImageCompressor
 
 		image.Mutate(i => i.Pad(edge, edge));
 
-		QuadTree<Rectangle> quadTree = new(image.Bounds());
-
 		imageBounds.Offset((edge - imageBounds.Width) / 2, (edge - imageBounds.Height) / 2);
 
 		//image.Mutate(i => i.DrawPolygon(new Pen(Color.Blue, 4), new RectangularPolygon(imageBounds).Points.ToArray()));
 
-		QuadTree<Fragment> fragmentTree = new(null);
+		QuadTree<Fragment, QuadrantData> fragmentTree = new(null);
 
 		RecursivelyGenerateFragmentTree(fragmentTree.BaseNode, image, ((i, r) => CalculateImageComplexity(i, r) < complexityThreshold), imageBounds, image.Bounds(), limit, minLimit);
 
@@ -52,7 +50,7 @@ public static class ImageCompressor
 		return fragmentTree;
 	}
 
-	public static Image<Rgb24> Decompress(QuadTree<Fragment> fragmentTree, int width, int height)
+	public static Image<Rgb24> Decompress(QuadTree<Fragment, QuadrantData> fragmentTree, int width, int height)
 	{
 		Image<Rgb24> outputImage = new Image<Rgb24>(width, height);
 		RecursivelyAssembleOutputImage(fragmentTree.BaseNode, outputImage, new Rectangle(0, 0, width, height));
@@ -63,7 +61,7 @@ public static class ImageCompressor
 		return outputImage;
 	}
 
-	public static void SaveToFile(QuadTree<Fragment> fragmentTree, string path)
+	public static void SaveToFile(QuadTree<Fragment, QuadrantData> fragmentTree, string path)
 	{
 		File.Delete(path);
 		using FileStream fileStream = File.OpenWrite(path);
@@ -75,7 +73,7 @@ public static class ImageCompressor
 		Console.WriteLine("saved");
 	}
 
-	public static void RecursivelyWriteQuadTreeData(QuadTreeCell<Fragment> quadTreeCell, BitBinaryWriter binaryWriter)
+	public static void RecursivelyWriteQuadTreeData(QuadTreeCell<Fragment, QuadrantData> quadTreeCell, BitBinaryWriter binaryWriter)
 	{
 		binaryWriter.WriteBit(quadTreeCell.IsLeaf);
 
@@ -92,13 +90,13 @@ public static class ImageCompressor
 		RecursivelyWriteQuadTreeData(quadTreeCell.D, binaryWriter);
 	}
 
-	public static QuadTree<Fragment> LoadFromFile(string path)
+	public static QuadTree<Fragment, QuadrantData> LoadFromFile(string path)
 	{
 		using FileStream fileStream = File.OpenRead(path);
 		using BinaryReader binaryReader = new BinaryReader(fileStream);
 		BitBinaryReader bitBinaryReader = new BitBinaryReader(binaryReader);
 
-		QuadTree<Fragment> fragmentTree = new QuadTree<Fragment>(null);
+		QuadTree<Fragment, QuadrantData> fragmentTree = new QuadTree<Fragment, QuadrantData>(null);
 
 		RecursivelyReadQuadTreeData(fragmentTree.BaseNode, bitBinaryReader);
 
@@ -107,7 +105,7 @@ public static class ImageCompressor
 		return fragmentTree;
 	}
 
-	public static void RecursivelyReadQuadTreeData(QuadTreeCell<Fragment> quadTreeCell, BitBinaryReader binaryReader)
+	public static void RecursivelyReadQuadTreeData(QuadTreeCell<Fragment, QuadrantData> quadTreeCell, BitBinaryReader binaryReader)
 	{
 		if (binaryReader.ReadBit() == true)
 		{// The current cell is a leaf!
@@ -132,7 +130,7 @@ public static class ImageCompressor
 		RecursivelyReadQuadTreeData(quadTreeCell.D, binaryReader);
 	}
 
-	private static void RecursivelyAssembleOutputImage(QuadTreeCell<Fragment> fragmentCell, Image<Rgb24> outputImage, Rectangle rectangle)
+	private static void RecursivelyAssembleOutputImage(QuadTreeCell<Fragment, QuadrantData> fragmentCell, Image<Rgb24> outputImage, Rectangle rectangle)
 	{
 		if (fragmentCell.LeafData is not null)
 		{
@@ -170,7 +168,7 @@ public static class ImageCompressor
 		d = new Rectangle(new Point(rectangle.Left + rectangle.Width / 2, rectangle.Top + rectangle.Height / 2), size);
 	}
 
-	private static void RecursivelyGenerateFragmentTree(QuadTreeCell<Fragment> fragmentCell, Image<Rgb24> image, Func<Image<Rgb24>, Rectangle, bool> quadrantizePredicate, Rectangle imageBounds, Rectangle rectangle, int limit, int minLimit, int level = 0)
+	private static void RecursivelyGenerateFragmentTree(QuadTreeCell<Fragment, QuadrantData> fragmentCell, Image<Rgb24> image, Func<Image<Rgb24>, Rectangle, bool> quadrantizePredicate, Rectangle imageBounds, Rectangle rectangle, int limit, int minLimit, int level = 0)
 	{
 
 		if (!imageBounds.IntersectsWith(rectangle))
