@@ -29,7 +29,7 @@ namespace Image_Compressor
 		{
 			image.Mutate(i => i.BoxBlur(3, new Rectangle(rectangle.X, Math.Max(rectangle.Y - ((rectangle.Height / 6) / 2), 0), rectangle.Width, Math.Max(rectangle.Height / 6, 1))));
 
-			image.Mutate(i => i.BoxBlur(3, new Rectangle(Math.Max(rectangle.X - ((rectangle.Width / 6) / 2), 0), rectangle.Y, Math.Max(rectangle.Width / 6, 1), rectangle.Height)));
+			image.Mutate(i => i.BoxBlur(3, new Rectangle(Math.Max(rectangle.X - ((rectangle.Width / 6) / 2), 0), rectangle.Y - (rectangle.Height / 6), Math.Max(rectangle.Width / 6, 1), rectangle.Height + (rectangle.Height / 6))));
 		}
 
 		public void DrawRepresentation(Image<Rgb24> image, Rectangle rectangle);
