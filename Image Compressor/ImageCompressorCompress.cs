@@ -8,7 +8,7 @@ using System.Numerics;
 
 namespace Image_Compressor;
 
-public static class ImageCompressor
+public static partial class ImageCompressor
 {
 	public static QuadTree<Fragment, QuadrantData> Compress(Image<Rgb24> image, float complexityThreshold, int maxLimit, int minLimit)
 	{
@@ -48,124 +48,6 @@ public static class ImageCompressor
 		Console.WriteLine("generated fragment tree");
 
 		return fragmentTree;
-	}
-
-	public static Image<Rgb24> Decompress(QuadTree<Fragment, QuadrantData> fragmentTree, int width, int height)
-	{
-		Image<Rgb24> outputImage = new Image<Rgb24>(width, height);
-		RecursivelyAssembleOutputImage(fragmentTree.BaseNode, outputImage, new Rectangle(0, 0, width, height));
-		outputImage.SaveAsBmp(@$"R:\output.bmp");
-
-		Console.WriteLine("assembled");
-
-		return outputImage;
-	}
-
-	public static void SaveToFile(QuadTree<Fragment, QuadrantData> fragmentTree, string path)
-	{
-		File.Delete(path);
-		using FileStream fileStream = File.OpenWrite(path);
-		using BinaryWriter binaryWriter = new BinaryWriter(fileStream);
-		using BitBinaryWriter bitBinaryWriter = new BitBinaryWriter(binaryWriter);
-
-		RecursivelyWriteQuadTreeData(fragmentTree.BaseNode, bitBinaryWriter);
-
-		Console.WriteLine("saved");
-	}
-
-	public static void RecursivelyWriteQuadTreeData(QuadTreeCell<Fragment, QuadrantData> quadTreeCell, BitBinaryWriter binaryWriter)
-	{
-		binaryWriter.WriteBit(quadTreeCell.IsLeaf);
-
-		if (quadTreeCell.IsLeaf)
-		{
-			Fragment.WriteFragmentData(quadTreeCell.LeafData, binaryWriter);
-
-			return;
-		}
-
-		RecursivelyWriteQuadTreeData(quadTreeCell.A, binaryWriter);
-		RecursivelyWriteQuadTreeData(quadTreeCell.B, binaryWriter);
-		RecursivelyWriteQuadTreeData(quadTreeCell.C, binaryWriter);
-		RecursivelyWriteQuadTreeData(quadTreeCell.D, binaryWriter);
-	}
-
-	public static QuadTree<Fragment, QuadrantData> LoadFromFile(string path)
-	{
-		using FileStream fileStream = File.OpenRead(path);
-		using BinaryReader binaryReader = new BinaryReader(fileStream);
-		BitBinaryReader bitBinaryReader = new BitBinaryReader(binaryReader);
-
-		QuadTree<Fragment, QuadrantData> fragmentTree = new QuadTree<Fragment, QuadrantData>(null);
-
-		RecursivelyReadQuadTreeData(fragmentTree.BaseNode, bitBinaryReader);
-
-		Console.WriteLine("loaded");
-
-		return fragmentTree;
-	}
-
-	public static void RecursivelyReadQuadTreeData(QuadTreeCell<Fragment, QuadrantData> quadTreeCell, BitBinaryReader binaryReader)
-	{
-		if (binaryReader.ReadBit() == true)
-		{// The current cell is a leaf!
-#if Debug_Reading_Deep
-			Console.Write("-Leaf");
-#endif
-
-			quadTreeCell.Unify(Fragment.ReadFragmentData(binaryReader));
-
-			return;
-		}
-#if Debug_Reading_Deep
-		else
-				Console.Write("-Branch");
-#endif
-
-		quadTreeCell.Split(null, null, null, null);
-
-		RecursivelyReadQuadTreeData(quadTreeCell.A, binaryReader);
-		RecursivelyReadQuadTreeData(quadTreeCell.B, binaryReader);
-		RecursivelyReadQuadTreeData(quadTreeCell.C, binaryReader);
-		RecursivelyReadQuadTreeData(quadTreeCell.D, binaryReader);
-	}
-
-	private static void RecursivelyAssembleOutputImage(QuadTreeCell<Fragment, QuadrantData> fragmentCell, Image<Rgb24> outputImage, Rectangle rectangle)
-	{
-		if (fragmentCell.LeafData is not null)
-		{
-			fragmentCell.LeafData.DrawRepresentation(outputImage, rectangle);
-
-			return;
-		}
-
-		GetRectangleQuadrants(rectangle, out var a, out var b, out var c, out var d);
-		for (int i = 0; i < 4; i++)
-		{
-			RecursivelyAssembleOutputImage(i switch
-			{
-				0 => fragmentCell.A,
-				1 => fragmentCell.B,
-				2 => fragmentCell.C,
-				3 => fragmentCell.D,
-			}, outputImage, i switch
-			{
-				0 => a,
-				1 => b,
-				2 => c,
-				3 => d,
-			});
-		}
-	}
-
-	public static void GetRectangleQuadrants(Rectangle rectangle, out Rectangle a, out Rectangle b, out Rectangle c, out Rectangle d)
-	{
-		Size size = new Size(rectangle.Width / 2, rectangle.Height / 2);
-
-		a = new Rectangle(new Point(rectangle.Left, rectangle.Top), size);
-		b = new Rectangle(new Point(rectangle.Left + rectangle.Width / 2, rectangle.Top), size);
-		c = new Rectangle(new Point(rectangle.Left, rectangle.Top + rectangle.Height / 2), size);
-		d = new Rectangle(new Point(rectangle.Left + rectangle.Width / 2, rectangle.Top + rectangle.Height / 2), size);
 	}
 
 	private static void RecursivelyGenerateFragmentTree(QuadTreeCell<Fragment, QuadrantData> fragmentCell, Image<Rgb24> image, Func<Image<Rgb24>, Rectangle, bool> quadrantizePredicate, Rectangle imageBounds, Rectangle rectangle, int limit, int minLimit, int level = 0)
