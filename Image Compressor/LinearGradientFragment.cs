@@ -97,7 +97,7 @@ namespace Image_Compressor
 		{
 			binaryWriter.WriteColor(aColor);
 			binaryWriter.WriteColor(bColor);
-			binaryWriter.WriteByte((FragmentId)sampleLine, (byte)SampleLine._BitSize);
+			binaryWriter.WriteByte((byte)sampleLine, (byte)SampleLine._BitSize);
 		}
 
 		public Fragment ReadSpecificFragmentData(BitBinaryReader binaryReader)
