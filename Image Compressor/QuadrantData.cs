@@ -15,6 +15,14 @@ public struct QuadrantData : IEquatable<QuadrantData>
 	public byte ThirdColorComponentBitDepth;
 	public ColorFormat ColorFormat;
 
+	public QuadrantData(byte firstColorComponentBitDepth, byte secondColorComponentBitDepth, byte thirdColorComponentBitDepth, ColorFormat colorFormat)
+	{
+		FirstColorComponentBitDepth = firstColorComponentBitDepth;
+		SecondColorComponentBitDepth = secondColorComponentBitDepth;
+		ThirdColorComponentBitDepth = thirdColorComponentBitDepth;
+		ColorFormat = colorFormat;
+	}
+
 	public static QuadrantData Read(BitBinaryReader bitBinaryReader, QuadrantData previousData)
 	{
 		QuadrantData constantData = previousData;
