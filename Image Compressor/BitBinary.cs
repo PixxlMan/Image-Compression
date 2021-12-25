@@ -1,4 +1,6 @@
-﻿using SixLabors.ImageSharp.PixelFormats;
+﻿using SixLabors.ImageSharp.ColorSpaces;
+using SixLabors.ImageSharp.ColorSpaces.Conversion;
+using SixLabors.ImageSharp.PixelFormats;
 using System.Collections;
 
 namespace Image_Compressor
@@ -124,6 +126,8 @@ namespace Image_Compressor
 			this.binaryReader = binaryReader;
 
 			FillBitArray();
+
+			colorSpaceConverter = new();
 		}
 
 		private BinaryReader binaryReader;
@@ -133,6 +137,8 @@ namespace Image_Compressor
 		private byte bitIndex;
 
 		public long ProcessedBits;
+
+		private ColorSpaceConverter colorSpaceConverter;
 
 		private void FillBitArray()
 		{
@@ -237,6 +243,38 @@ namespace Image_Compressor
 #endif
 
 			return color;
+		}
+
+		public Rgb24 ReadColor(QuadrantData quadrantData)
+		{
+			if (quadrantData.ColorFormat is ColorFormat.HSV)
+			{
+				Hsv hsv = new Hsv((float)ReadByte(quadrantData.FirstColorComponentBitDepth) * (360f/255f), (float)ReadByte(quadrantData.SecondColorComponentBitDepth) * (360f / 255f), (float)ReadByte(quadrantData.ThirdColorComponentBitDepth) * (360f / 255f));
+
+				Rgb24 color = colorSpaceConverter.ToRgb(hsv);
+
+#if Debug_Reading_Deep
+				Console.Write("{c" + color.R + "_" + color.G + "_" + color.B + "_" + "}");
+#endif
+
+				return color;
+			}
+
+			if (quadrantData.ColorFormat is ColorFormat.RGB)
+			{
+				Rgb24 color;
+				color.R = ReadByte(quadrantData.FirstColorComponentBitDepth);
+				color.G = ReadByte(quadrantData.SecondColorComponentBitDepth);
+				color.B = ReadByte(quadrantData.ThirdColorComponentBitDepth);
+
+#if Debug_Reading_Deep
+				Console.Write("{c" + color.R + "_" + color.G + "_" + color.B + "_" + "}");
+#endif
+
+				return color;
+			}
+
+			return default;
 		}
 	}
 }
