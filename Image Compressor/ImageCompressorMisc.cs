@@ -17,13 +17,15 @@ public static partial class ImageCompressor
 		using BinaryWriter binaryWriter = new BinaryWriter(fileStream);
 		using BitBinaryWriter bitBinaryWriter = new BitBinaryWriter(binaryWriter);
 
-		RecursivelyWriteQuadTreeData(fragmentTree.BaseNode, bitBinaryWriter);
+		RecursivelyWriteQuadTreeData(fragmentTree.BaseNode, fragmentTree.BaseNode.Data, bitBinaryWriter);
 
 		Console.WriteLine("saved");
 	}
 
-	public static void RecursivelyWriteQuadTreeData(QuadTreeCell<Fragment, QuadrantData> quadTreeCell, BitBinaryWriter binaryWriter)
+	public static void RecursivelyWriteQuadTreeData(QuadTreeCell<Fragment, QuadrantData> quadTreeCell, QuadrantData previousQuadrantData, BitBinaryWriter binaryWriter)
 	{
+		quadTreeCell.Data.Write(binaryWriter, previousQuadrantData);
+
 		binaryWriter.WriteBit(quadTreeCell.IsLeaf);
 
 		if (quadTreeCell.IsLeaf)
@@ -33,10 +35,10 @@ public static partial class ImageCompressor
 			return;
 		}
 
-		RecursivelyWriteQuadTreeData(quadTreeCell.A, binaryWriter);
-		RecursivelyWriteQuadTreeData(quadTreeCell.B, binaryWriter);
-		RecursivelyWriteQuadTreeData(quadTreeCell.C, binaryWriter);
-		RecursivelyWriteQuadTreeData(quadTreeCell.D, binaryWriter);
+		RecursivelyWriteQuadTreeData(quadTreeCell.A, previousQuadrantData, binaryWriter);
+		RecursivelyWriteQuadTreeData(quadTreeCell.B, previousQuadrantData, binaryWriter);
+		RecursivelyWriteQuadTreeData(quadTreeCell.C, previousQuadrantData, binaryWriter);
+		RecursivelyWriteQuadTreeData(quadTreeCell.D, previousQuadrantData, binaryWriter);
 	}
 
 	public static QuadTree<Fragment, QuadrantData> LoadFromFile(string path)
@@ -47,22 +49,24 @@ public static partial class ImageCompressor
 
 		QuadTree<Fragment, QuadrantData> fragmentTree = new QuadTree<Fragment, QuadrantData>(null);
 
-		RecursivelyReadQuadTreeData(fragmentTree.BaseNode, bitBinaryReader);
+		RecursivelyReadQuadTreeData(fragmentTree.BaseNode, fragmentTree.BaseNode.Data, bitBinaryReader);
 
 		Console.WriteLine("loaded");
 
 		return fragmentTree;
 	}
 
-	public static void RecursivelyReadQuadTreeData(QuadTreeCell<Fragment, QuadrantData> quadTreeCell, BitBinaryReader binaryReader)
+	public static void RecursivelyReadQuadTreeData(QuadTreeCell<Fragment, QuadrantData> quadTreeCell, QuadrantData previousQuadrantData, BitBinaryReader binaryReader)
 	{
+		quadTreeCell.Data = QuadrantData.Read(binaryReader, previousQuadrantData);
+
 		if (binaryReader.ReadBit() == true)
 		{// The current cell is a leaf!
 #if Debug_Reading_Deep
 			Console.Write("-Leaf");
 #endif
 
-			quadTreeCell.Unify(Fragment.ReadFragmentData(binaryReader));
+			quadTreeCell.Unify(Fragment.ReadFragmentData(binaryReader, quadTreeCell.Data));
 
 			return;
 		}
@@ -73,10 +77,10 @@ public static partial class ImageCompressor
 
 		quadTreeCell.Split(null, null, null, null);
 
-		RecursivelyReadQuadTreeData(quadTreeCell.A, binaryReader);
-		RecursivelyReadQuadTreeData(quadTreeCell.B, binaryReader);
-		RecursivelyReadQuadTreeData(quadTreeCell.C, binaryReader);
-		RecursivelyReadQuadTreeData(quadTreeCell.D, binaryReader);
+		RecursivelyReadQuadTreeData(quadTreeCell.A, previousQuadrantData, binaryReader);
+		RecursivelyReadQuadTreeData(quadTreeCell.B, previousQuadrantData, binaryReader);
+		RecursivelyReadQuadTreeData(quadTreeCell.C, previousQuadrantData, binaryReader);
+		RecursivelyReadQuadTreeData(quadTreeCell.D, previousQuadrantData, binaryReader);
 	}
 
 	public static void GetRectangleQuadrants(Rectangle rectangle, out Rectangle a, out Rectangle b, out Rectangle c, out Rectangle d)

@@ -58,7 +58,7 @@ namespace Image_Compressor
 			binaryWriter.WriteColor(centerColor);
 		}
 
-		public Fragment ReadSpecificFragmentData(BitBinaryReader binaryReader)
+		public Fragment ReadSpecificFragmentData(BitBinaryReader binaryReader, QuadrantData quadrantData)
 		{
 			aColor = binaryReader.ReadColor();
 			bColor = binaryReader.ReadColor();

@@ -24,7 +24,7 @@ namespace Image_Compressor
 
 		}
 
-		public Fragment ReadSpecificFragmentData(BitBinaryReader binaryReader)
+		public Fragment ReadSpecificFragmentData(BitBinaryReader binaryReader, QuadrantData quadrantData)
 		{
 			return this;
 		}

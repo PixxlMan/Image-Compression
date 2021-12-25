@@ -36,7 +36,7 @@ namespace Image_Compressor
 
 		protected void WriteSpecificFragmentData(BitBinaryWriter binaryWriter);
 
-		protected Fragment ReadSpecificFragmentData(BitBinaryReader binaryReader);
+		protected Fragment ReadSpecificFragmentData(BitBinaryReader binaryReader, QuadrantData quadrantData);
 
 		public static void WriteFragmentData(Fragment fragment, BitBinaryWriter binaryWriter)
 		{
@@ -44,7 +44,7 @@ namespace Image_Compressor
 			fragment.WriteSpecificFragmentData(binaryWriter);
 		}
 
-		public static Fragment ReadFragmentData(BitBinaryReader binaryReader)
+		public static Fragment ReadFragmentData(BitBinaryReader binaryReader, QuadrantData quadrantData)
 		{
 			FragmentId id = (FragmentId)binaryReader.ReadByte(8, 6);
 
@@ -55,9 +55,9 @@ namespace Image_Compressor
 			return id switch
 			{
 				EmptyFragment.ConstId => new EmptyFragment(),
-				SingleColorFragment.ConstId => new SingleColorFragment().ReadSpecificFragmentData(binaryReader),
-				LinearGradientFragment.ConstId => new LinearGradientFragment().ReadSpecificFragmentData(binaryReader),
-				FiveColorGradientFragment.ConstId => new FiveColorGradientFragment().ReadSpecificFragmentData(binaryReader),
+				SingleColorFragment.ConstId => new SingleColorFragment().ReadSpecificFragmentData(binaryReader, quadrantData),
+				LinearGradientFragment.ConstId => new LinearGradientFragment().ReadSpecificFragmentData(binaryReader, quadrantData),
+				FiveColorGradientFragment.ConstId => new FiveColorGradientFragment().ReadSpecificFragmentData(binaryReader, quadrantData),
 			};
 		}
 
