@@ -2,17 +2,17 @@
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
-/*var image = Image.Load<Rgb24>(@"R:\Image.jpg");
-var output = ImageCompressor.Compress(image, 1.7f, 100, 7);
+var image = Image.Load<Rgb24>(@"R:\Image.jpg");
+var output = ImageCompressor.Compress(image, 3f, 100, 5);
 ImageCompressor.SaveToFile(output, @"R:\compressed");
-ImageCompressor.Decompress(output, Math.Max(image.Width, image.Height), Math.Max(image.Width, image.Height));*/
+ImageCompressor.Decompress(output, Math.Max(image.Width, image.Height), Math.Max(image.Width, image.Height));
 //ImageCompressor.Decompress(ImageCompressor.LoadFromFile(@"R:\compressed"), Math.Max(image.Width, image.Height), Math.Max(image.Width, image.Height));
 
 
 //ImageCompressor.Decompress(ImageCompressor.LoadFromFile(@"R:\compressed"), 1024, 1024);
 
 
-File.Delete(@"R:\test.bin");
+/*File.Delete(@"R:\test.bin");
 using var stream = File.OpenWrite(@"R:\test.bin");
 using var binaryWriter = new BinaryWriter(stream);
 using var bitBinaryWriter = new BitBinaryWriter(binaryWriter);
@@ -43,4 +43,4 @@ bitBinaryReader.ReadBit();
 bitBinaryReader.ReadByte();
 bitBinaryReader.ReadByte();
 bitBinaryReader.ReadUInt();
-bitBinaryReader.ReadInt();
+bitBinaryReader.ReadInt();*/
